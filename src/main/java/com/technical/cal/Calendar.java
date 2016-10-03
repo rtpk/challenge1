@@ -36,20 +36,11 @@ public class Calendar implements Iterable<LocalDate> {
                     state = state.with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
                 return state;
             }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
         };
         return it;
     }
 
     public LocalDate getStartDate() {
         return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
     }
 }
