@@ -30,10 +30,10 @@ public class Calendar implements Iterable<LocalDate> {
 
             @Override
             public LocalDate next() {
-                if (state.getDayOfWeek().equals(DayOfWeek.THURSDAY))
+                if (state.getDayOfWeek().equals(DayOfWeek.TUESDAY) || state.getDayOfWeek().equals(DayOfWeek.WEDNESDAY) || state.getDayOfWeek().equals(DayOfWeek.THURSDAY))
                     state = state.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
                 else
-                    state = state.with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
+                    state = state.with(TemporalAdjusters.next(DayOfWeek.TUESDAY));
                 return state;
             }
         };

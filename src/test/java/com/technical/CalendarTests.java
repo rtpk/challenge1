@@ -4,7 +4,9 @@ import com.technical.cal.Calendar;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -31,19 +33,18 @@ public class CalendarTests {
         assertThat(calendar.getStartDate()).isNotNull();
     }
 
-//
-//    @Test
-//    public void testCalendarCollections() {
-//        Calendar calendar = new Calendar(LocalDate.now());
-//
-//        Iterator it = calendar.iterator();
-//        List<LocalDate> temp = new ArrayList<LocalDate>();
-//        temp.add((LocalDate) it.next());
-//        temp.add((LocalDate) it.next());
-//        assertThat(temp).
-//
-//    }
+    @Test
+    public void testCalendarCollections() {
+        Calendar calendar = new Calendar(LocalDate.of(2016,9,19));
 
+        Iterator it = calendar.iterator();
+        List<LocalDate> temp = new ArrayList<>();
+        temp.add((LocalDate) it.next());
+        temp.add((LocalDate) it.next());
+        temp.add((LocalDate) it.next());
+        assertThat(temp).contains(LocalDate.of(2016,9,20)).contains(LocalDate.of(2016,9,23)).contains(LocalDate.of(2016,9,27));
+
+    }
 
     @Test
     public void testCalendarMoreThanOneIterators() {
@@ -52,9 +53,7 @@ public class CalendarTests {
         Iterator firstIterator = calendar.iterator();
         Iterator secondIterator = calendar.iterator();
 
-        assertThat(firstIterator.next()).isEqualTo(secondIterator.hasNext());
-        assertThat(firstIterator.next()).isEqualTo(secondIterator.hasNext());
-        assertThat(firstIterator.next()).isEqualTo(secondIterator.hasNext());
+        assertThat(firstIterator.next()).isEqualTo(secondIterator.next());
     }
 
 }
