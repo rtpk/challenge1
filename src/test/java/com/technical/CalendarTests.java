@@ -42,7 +42,8 @@ public class CalendarTests {
         temp.add((LocalDate) it.next());
         temp.add((LocalDate) it.next());
         temp.add((LocalDate) it.next());
-        assertThat(temp).contains(LocalDate.of(2016,9,20)).contains(LocalDate.of(2016,9,23)).contains(LocalDate.of(2016,9,27));
+        temp.add((LocalDate) it.next());
+        assertThat(temp).contains(LocalDate.of(2016,9,20),LocalDate.of(2016,9,23),LocalDate.of(2016,9,27),LocalDate.of(2016,9,30));
 
     }
 
