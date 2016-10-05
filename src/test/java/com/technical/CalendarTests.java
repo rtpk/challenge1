@@ -24,7 +24,7 @@ public class CalendarTests {
     @Test
     public void testIteratorNext() {
         Calendar calendar = new Calendar(LocalDate.now());
-        assertThat(calendar.iterator().hasNext()).isNotNull();
+        assertThat(calendar.iterator().hasNext()).isTrue();
     }
 
     @Test
