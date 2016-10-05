@@ -20,7 +20,7 @@ public class NodeImplTests {
 
         NodeImpl nodes = new NodeImpl(file);
 
-        assertThat(nodes.iterator().hasNext()).isTrue();
+        assertThat(nodes.iterator()).isNotNull();
 //        File file2 = new File( nodes.iterator().next().getNodeName());
 //        NodeImpl node2 = new NodeImpl(file2);
 //
