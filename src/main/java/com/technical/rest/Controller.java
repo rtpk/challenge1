@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Controller {
 
+    private final Utils utils;
+
     @Autowired
-    Utils utils;
+    public Controller(Utils utils) {
+        this.utils = utils;
+    }
 
     @RequestMapping(value = "/addFile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getActiveOrders(@RequestParam String name) {
