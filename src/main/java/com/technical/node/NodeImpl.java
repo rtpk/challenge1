@@ -1,4 +1,4 @@
-package com.technical.models;
+package com.technical.node;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,10 +29,8 @@ public class NodeImpl implements Node {
 
             @Override
             public boolean hasNext() {
-                if(index < childsList.size())
-                    return true;
-                else
-                    return false;
+              return (index < childsList.size());
+
             }
 
             @Override
@@ -49,10 +47,7 @@ public class NodeImpl implements Node {
 
     @Override
     public boolean checkIfParent() {
-        if (file.isDirectory() && file.list().length > 0)
-            return true;
-        else
-            return false;
+        return (file.isDirectory() && file.list().length > 0);
     }
 
     @Override

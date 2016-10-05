@@ -1,6 +1,6 @@
 package com.technical;
 
-import com.technical.models.NodeImpl;
+import com.technical.node.NodeImpl;
 import org.junit.Test;
 
 import java.io.File;

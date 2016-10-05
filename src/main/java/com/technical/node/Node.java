@@ -1,4 +1,4 @@
-package com.technical.models;
+package com.technical.node;
 
 /**
  * Created by Robert Piotrowski on 04/10/2016.

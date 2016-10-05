@@ -36,7 +36,7 @@
         
         function sendName() {
             var name = document.getElementById('name').value;
-            stompClient.send("/app/quotations", {}, "{ 'name': 'name' }");
+            stompClient.send("/app/files", {}, "{ 'name': 'name' }");
         }
         
         function showGreeting(message) {
