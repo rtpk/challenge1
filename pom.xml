@@ -73,7 +73,9 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                <executions>
                    <execution>
-                       <goals>prepare-agent</goals>
+                       <goals>
+                           <goal>prepare-agent</goal>
+                       </goals>
                    </execution>
                    <execution>
                        <id>report</id>
