@@ -3,7 +3,6 @@ jdk:
 - oraclejdk8
 before_install:
 - chmod +x mvnw
-- pip install --user codecov
 script:
 - mvn test
 after_sucess:

@@ -1,5 +1,6 @@
 package com.technical;
 
+import com.technical.node.Node;
 import com.technical.node.NodeImpl;
 import org.junit.Test;
 
@@ -18,8 +19,7 @@ public class NodeImplTests {
     public void testIteratorExists() {
         File file = new File("C:/Users/rtpk/Downloads");
 
-        NodeImpl nodes = new NodeImpl(file);
-
+        Node nodes = new NodeImpl(file);
         assertThat(nodes.iterator()).isNotNull();
 //        File file2 = new File( nodes.iterator().next().getNodeName());
 //        NodeImpl node2 = new NodeImpl(file2);
