@@ -7,5 +7,5 @@ install:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script:
 - mvn test
-after_sucess:
+after_script:
 - bash <(curl -s https://codecov.io/bash)
