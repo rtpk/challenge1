@@ -8,4 +8,4 @@ install:
 script:
 - mvn test
 after_sucess:
- - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
