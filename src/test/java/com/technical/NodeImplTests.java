@@ -55,10 +55,11 @@ public class NodeImplTests {
             paths.add(it.next().toString());
         }
 
-        assertThat(paths).contains(folder.getRoot().toString() + "\\file3.txt",
-                folder.getRoot().toString() + "\\folder3\\folder4",
+        assertThat(paths).contains(
                 folder.getRoot().toString() + "\\folder1\\file2.txt",
-                folder.getRoot().toString() + "\\folder2\\folder5\\file1.txt");
+                folder.getRoot().toString() + "\\folder3\\folder4",
+                folder.getRoot().toString() + "\\folder2\\folder5\\file1.txt",
+                folder.getRoot().toString() + "\\file3.txt");
     }
 
 
