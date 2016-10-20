@@ -15,13 +15,12 @@
         }
         
         function connect() {
-            var socket = new SockJS('/quotations');
+            var socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);            
             stompClient.connect({}, function(frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/files', function(greeting){
-                    showGreeting(JSON.parse(greeting.body).content);
+                stompClient.subscribe('/app/files');
                 });
             });
         }
@@ -35,16 +34,8 @@
         }
         
         function sendName() {
-            var name = document.getElementById('name').value;
-            stompClient.send("/app/files", {}, "{ 'name': 'name' }");
-        }
-        
-        function showGreeting(message) {
-            var response = document.getElementById('response');
-            var p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
-            response.appendChild(p);
+            var namePath = document.getElementById('name').value;
+            stompClient.send("/app/files", {}, namePath);
         }
 
     </script>
