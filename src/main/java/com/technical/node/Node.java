@@ -5,9 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-
-public interface Node<T extends NodeWrapper> extends Iterable<Node> {
-    NodeWrapper getNode();
+public interface Node<T extends NodeWrapper> extends Iterable {
+    T getNode();
 
     default Iterator<Node> iterator() {
         return new Iterator<Node>() {
@@ -24,6 +23,8 @@ public interface Node<T extends NodeWrapper> extends Iterable<Node> {
             @Override
             public Node next() {
 
+                if (branchStack.isEmpty() && getNodeSize() <= childPosition) return null;
+
                 if (childPosition >= getNodeSize()) {
                     Map.Entry<Node, Integer> entry = branchStack.pop();
                     childPosition = entry.getValue();
@@ -31,15 +32,14 @@ public interface Node<T extends NodeWrapper> extends Iterable<Node> {
                     return next();
                 }
                 if (getChild(childPosition).getNode().isBranch()) {
-                    if(childPosition+1<getNodeSize())
+                    if (childPosition + 1 < getNodeSize())
                         branchStack.push(new HashMap.SimpleEntry<>(currentItem, childPosition + 1));
                     currentItem = getChild(childPosition);
                     childPosition = 0;
                     return currentItem;
                 }
                 if (childPosition < getNodeSize()) {
-                    Node temp = getChild(childPosition++);
-                    return temp;
+                    return getChild(childPosition++);
                 }
                 return null;
             }

@@ -5,21 +5,23 @@ import java.io.File;
 public class FileWrapper implements NodeWrapper {
 
     private File file;
+    private File[] fileList;
 
     public FileWrapper(File file) {
         this.file = file;
+        this.fileList = file.listFiles();
     }
 
     @Override
     public Node getChild(int index) {
         if (file.isFile()) return new NodeImpl(new FileWrapper(file));
-        return new NodeImpl(new FileWrapper(file.listFiles()[index]));
+        return new NodeImpl(new FileWrapper(fileList[index]));
     }
 
     @Override
     public int getSize() {
         if (file.isFile()) return 1;
-        return file.list().length;
+        return fileList.length;
     }
 
     @Override

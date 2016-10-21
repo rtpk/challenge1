@@ -16,5 +16,4 @@ public class NodeImpl implements Node<NodeWrapper> {
         return node.toString();
     }
 
-
 }

@@ -1,12 +1,12 @@
 package com.technical.node;
 
-public interface NodeWrapper {
+interface NodeWrapper {
 
-    //public Collections<NodeWrapper> children();  //komentarz: readonly // array
+  //  List getChildren();  //trzymanie jako tablica w wrapperze ?
 
-    Node getChild(int index); //zbedne
+    Node getChild(int index);
 
-    int getSize(); //zbedne
+    int getSize();
 
     boolean isBranch();
 }

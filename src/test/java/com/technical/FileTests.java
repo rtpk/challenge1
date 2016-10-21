@@ -1,15 +1,8 @@
 package com.technical;
 
-import com.technical.node.FileWrapper;
-import com.technical.node.Node;
-import com.technical.node.NodeImpl;
-import org.junit.Test;
-
-import java.io.File;
-
-public class NodeImplTests {
+public class FileTests {
 //
-//    @Rule  //do testow integracyjnych
+//    @Rule
 //    public TemporaryFolder folder = new TemporaryFolder();
 //
 //    @Test
@@ -26,7 +19,7 @@ public class NodeImplTests {
 //        Iterator it = root.iterator();
 //        assertThat(it.hasNext()).isTrue();
 //    }
-
+//
 //    @Test
 //    public void testIteratorOnFiles() throws IOException {
 //
@@ -43,38 +36,22 @@ public class NodeImplTests {
 //        while (it.hasNext()) {
 //            paths.add(it.next().toString());
 //        }
-//
-//        //testy na abstrakcjach - nie na plikach / bez tworzenia
 //        assertThat(paths).contains(
 //                folder.getRoot().toString() + "/folder1/file2.txt",
 //                folder.getRoot().toString() + "/folder3/folder4",
 //                folder.getRoot().toString() + "/folder2/folder5/file1.txt",
 //                folder.getRoot().toString() + "/file3.txt");
-//
-//        //test w oprac
 //    }
 
-    @Test
-    public void testIteratorExists() {
-        File file = new File("C:\\Users\\rtpk\\Downloads");
-        Node root = new NodeImpl(new FileWrapper(file));
-        for (Object node : root) {
-            System.out.println(node.toString());
-        }
-    }
-
-//
 //    @Test
-//    public void shouldIterateWithoutHasNext() throws IOException {
-//
-//        folder.newFile("jeden.txt");
-//        Node root = new NodeImpl(new FileWrapper(folder.getRoot()));
-//
-//        String file = root.iterator().next().toString();
-//        assertThat(file).isEqualTo(folder.getRoot().toString() + "\\jeden.txt");
-//
+//    public void testIteratorExists() {
+//        File file = new File("C:\\Users\\rtpk\\Downloads\\New folder\\test\\dsa\\zxc\\aa");
+//        Node root = new NodeImpl(new FileWrapper(file));
+//        for (Object node : root) {
+//            System.out.println(node.toString());
+//        }
 //    }
-//
+
 //
 //    @Test
 //    public void testMoreThanOneIteratorOnFiles() throws IOException {
@@ -88,7 +65,6 @@ public class NodeImplTests {
 //        Iterator secondIterator = root.iterator();
 //
 //        assertThat(firstIterator.next().toString()).isEqualTo(secondIterator.next().toString());
-//
 //    }
 
 }
