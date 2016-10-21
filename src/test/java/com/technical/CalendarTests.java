@@ -10,9 +10,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-/**
- * Created by Robert Piotrowski on 03/10/2016.
- */
 public class CalendarTests {
 
     @Test

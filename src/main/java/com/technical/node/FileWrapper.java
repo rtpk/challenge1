@@ -2,9 +2,6 @@ package com.technical.node;
 
 import java.io.File;
 
-/**
- * Created by Robert Piotrowski on 19/10/2016.
- */
 public class FileWrapper implements NodeWrapper {
 
     private File file;
@@ -26,7 +23,7 @@ public class FileWrapper implements NodeWrapper {
     }
 
     @Override
-    public boolean isContrainer() {
+    public boolean isBranch() {
         return file.isDirectory();
     }
 

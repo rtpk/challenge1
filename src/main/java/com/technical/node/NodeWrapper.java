@@ -1,12 +1,12 @@
 package com.technical.node;
 
-/**
- * Created by Robert Piotrowski on 19/10/2016.
- */
 public interface NodeWrapper {
-    public Node getChild(int index);
 
-    public int getSize();
+    //public Collections<NodeWrapper> children();  //komentarz: readonly // array
 
-    public boolean isContrainer();
+    Node getChild(int index); //zbedne
+
+    int getSize(); //zbedne
+
+    boolean isBranch();
 }

@@ -5,59 +5,41 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-/**
- * Created by Robert Piotrowski on 04/10/2016.
- */
+
 public interface Node<T extends NodeWrapper> extends Iterable<Node> {
     NodeWrapper getNode();
 
     default Iterator<Node> iterator() {
+        return new Iterator<Node>() {
+            Stack<Map.Entry<Node, Integer>> branchStack = new Stack<>();
 
-        Iterator<Node> it = new Iterator<Node>() {
-            Stack<Map.Entry<Node, Integer>> dirStack = new Stack<>();
-
-            int index = 0;
+            int childPosition = 0;
             Node currentItem = Node.this;
 
             @Override
             public boolean hasNext() {
-                while (!dirStack.isEmpty() && index >= getNodeSize()) {
-                    Map.Entry<Node, Integer> entry = dirStack.pop();
-                    setState(entry.getKey(), entry.getValue());
-                }
-                if (dirStack.isEmpty() && index >= getNodeSize())
-                    return false;
-                else
-                    return true;
-            }
-
-            private void setState(Node key, Integer position) {
-                index = position;
-                currentItem = key;
+                return !(branchStack.isEmpty() && getNodeSize() <= childPosition);
             }
 
             @Override
             public Node next() {
-                if (index >= getNodeSize()) {
-                    Map.Entry<Node, Integer> entry = dirStack.pop();
-                    setState(entry.getKey(), entry.getValue());
+
+                if (childPosition >= getNodeSize()) {
+                    Map.Entry<Node, Integer> entry = branchStack.pop();
+                    childPosition = entry.getValue();
+                    currentItem = entry.getKey();
                     return next();
                 }
-                if (getNode().isContrainer()) {
-                    Node tempNode = currentItem;
-                    dirStack.push(new HashMap.SimpleEntry<Node, Integer>(currentItem, index + 1));
-                    setState(getChild(index), 0);
-                    if (getNodeSize() == 0) {
-                        return currentItem;
-                    }
-                    if (!dirStack.contains(currentItem)) {
-                        return next();
-                    } else {
-                        return tempNode;
-                    }
+                if (getChild(childPosition).getNode().isBranch()) {
+                    if(childPosition+1<getNodeSize())
+                        branchStack.push(new HashMap.SimpleEntry<>(currentItem, childPosition + 1));
+                    currentItem = getChild(childPosition);
+                    childPosition = 0;
+                    return currentItem;
                 }
-                if (index < getNodeSize()) {
-                    return getChild(index++);
+                if (childPosition < getNodeSize()) {
+                    Node temp = getChild(childPosition++);
+                    return temp;
                 }
                 return null;
             }
@@ -74,8 +56,5 @@ public interface Node<T extends NodeWrapper> extends Iterable<Node> {
                 return getNode().getSize();
             }
         };
-
-        return it;
     }
-
 }
