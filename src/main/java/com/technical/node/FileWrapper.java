@@ -14,8 +14,8 @@ public class FileWrapper implements NodeWrapper {
 
     @Override
     public Node getChild(int index) {
-        if (file.isFile()) return new NodeImpl(new FileWrapper(file));
-        return new NodeImpl(new FileWrapper(fileList[index]));
+        if (file.isFile()) return new Node(new FileWrapper(file));
+        return new Node(new FileWrapper(fileList[index]));
     }
 
     @Override

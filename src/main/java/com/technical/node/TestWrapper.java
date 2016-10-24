@@ -15,7 +15,7 @@ public class TestWrapper implements NodeWrapper {
 
     @Override
     public Node getChild(int index) {
-        return new NodeImpl(new TestWrapper(objects.get(index)));
+        return new Node(new TestWrapper(objects.get(index)));
     }
 
     @Override

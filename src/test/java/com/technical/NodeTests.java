@@ -2,7 +2,6 @@ package com.technical;
 
 import com.google.common.collect.Lists;
 import com.technical.node.Node;
-import com.technical.node.NodeImpl;
 import com.technical.node.TestObject;
 import com.technical.node.TestWrapper;
 import org.junit.Test;
@@ -19,7 +18,7 @@ public class NodeTests {
     @Test
     public void shouldHasNextEmptyCollection() {
         TestObject testObj = TestObject.build();
-        Node root = new NodeImpl(new TestWrapper(testObj));
+        Node<TestWrapper> root = new Node<>(new TestWrapper(testObj));
         Iterator it = root.iterator();
         assertThat(it.hasNext()).isFalse();
     }
@@ -29,7 +28,7 @@ public class NodeTests {
     public void shouldHasNextOneElementCollection() {
         TestObject testObj = TestObject.build();
         testObj.add(TestObject.build());
-        Node root = new NodeImpl(new TestWrapper(testObj));
+        Node<TestWrapper> root = new Node<>(new TestWrapper(testObj));
         Iterator it = root.iterator();
         assertThat(it.hasNext()).isTrue();
     }
@@ -39,7 +38,7 @@ public class NodeTests {
     public void shouldMoreThanOneIteratorOnTestObjects() {
         TestObject testObj = TestObject.build();
         testObj.add(TestObject.build()).add(TestObject.build());
-        Node root = new NodeImpl(new TestWrapper(testObj));
+        Node<TestWrapper> root = new Node<>(new TestWrapper(testObj));
 
         Iterator firstIterator = root.iterator();
         Iterator secondIterator = root.iterator();
@@ -47,12 +46,12 @@ public class NodeTests {
         assertThat(firstIterator.next().toString()).isEqualTo(secondIterator.next().toString());
     }
 
-//TODO fix toString()
+
     @Test
     public void shouldIterateWithoutHasNext() {
         TestObject testObj = TestObject.build().setName("test");
         testObj.add(TestObject.build());
-        Node root = new NodeImpl(new TestWrapper(testObj));
+        Node<TestWrapper> root = new Node<>(new TestWrapper(testObj));
         assertThat(root.iterator().next().toString()).isEqualTo("null");
     }
 
@@ -65,7 +64,7 @@ public class NodeTests {
         testObj.add(TestObject.build().setName("branch3").add(TestObject.build().setName("leaf3")));
         testObj.add(TestObject.build().setName("leaf4"));
 
-        Node root = new NodeImpl(new TestWrapper(testObj));
+        Node<TestWrapper> root = new Node<>(new TestWrapper(testObj));
 
         Iterator it = root.iterator();
 

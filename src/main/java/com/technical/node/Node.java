@@ -5,10 +5,22 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-public interface Node<T extends NodeWrapper> extends Iterable {
-    T getNode();
+public class Node<T extends NodeWrapper> implements Iterable {
+    private T node;
 
-    default Iterator<Node> iterator() {
+    public Node(T node) {
+        this.node = node;
+    }
+
+    public T getNode() {
+        return node;
+    }
+
+    public String toString() {
+        return node.toString();
+    }
+
+    public Iterator<Node> iterator() {
         return new Iterator<Node>() {
             Stack<Map.Entry<Node, Integer>> branchStack = new Stack<>();
 
