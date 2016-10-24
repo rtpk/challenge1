@@ -53,7 +53,7 @@ public class NodeTests {
         TestObject testObj = TestObject.build().setName("test");
         testObj.add(TestObject.build());
         Node root = new NodeImpl(new TestWrapper(testObj));
-        assertThat(root.iterator().next()).isNull();  //assertj  nie dziala
+        assertThat(root.iterator().next().toString()).isEqualTo("null");
     }
 
     @Test

@@ -10,7 +10,7 @@ public class TestWrapper implements NodeWrapper {
 
     public TestWrapper(TestObject testObject) {
         this.testObject = testObject;
-        this.objects= testObject.getList();
+        this.objects = testObject.getList();
     }
 
     @Override
