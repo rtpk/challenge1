@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,8 +88,6 @@ public class NodeIterableTest {
 
         //When:
         Iterator it = root.iterator();
-        Stream s = StreamSupport.stream(root.spliterator(), false);
-
         List<String> paths = new ArrayList<>();
         while (it.hasNext()) {
             Node temp = (Node) it.next();

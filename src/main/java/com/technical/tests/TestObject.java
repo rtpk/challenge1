@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestObject {
-
-    public String getName() {
-        return name;
-    }
-
     private String name;
     private List<TestObject> list;
 
     private TestObject() {
+    }
+
+    public String getName() {
+        return name;
     }
 
     public static TestObject build() {
