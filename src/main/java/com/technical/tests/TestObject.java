@@ -1,9 +1,13 @@
-package com.technical.node;
+package com.technical.tests;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestObject {
+
+    public String getName() {
+        return name;
+    }
 
     private String name;
     private List<TestObject> list;
@@ -13,10 +17,6 @@ public class TestObject {
 
     public static TestObject build() {
         return new TestObject();
-    }
-
-    public boolean isBranch() {
-        return (list != null);
     }
 
     public List<TestObject> getList() {
@@ -34,7 +34,4 @@ public class TestObject {
         return this;
     }
 
-    public String toString() {
-        return String.valueOf(name);
-    }
 }
