@@ -20,7 +20,7 @@ public class NodeIterableTest {
     @Test
     public void shouldHasNextIsFalseNoMoreElements() {
         //Given:
-        TestObject rootParent = TestObject.build();
+        TestObject rootParent = TestObject.build().setName("file");
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(rootParent));
 
         //When:
@@ -117,7 +117,7 @@ public class NodeIterableTest {
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator it = root.iterator();
+        Iterator it = root.iterator();  //dokladniej - uzasadnic generic
         List<String> results = (List<String>) StreamSupport.stream(root.spliterator(), false).map(o -> ((Node)o).getPayload()).collect(Collectors.toList());
 
         //Then

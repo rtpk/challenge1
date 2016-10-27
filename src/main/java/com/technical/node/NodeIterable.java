@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-public class NodeIterable<T extends Node> implements Iterable {
+public class NodeIterable<T extends Node> implements Iterable {  ///wykazaac po co
     private T node;
 
     public NodeIterable(T node) {
@@ -16,41 +16,46 @@ public class NodeIterable<T extends Node> implements Iterable {
         return node;
     }
 
-    @SuppressWarnings("unchecked")
+ //
     public Iterator<T> iterator() {
         return new Iterator<T>() {
             Stack<Map.Entry<T, Integer>> branchStack = new Stack<>();
 
-            int childPosition = 0;
-            T currentItem = NodeIterable.this.getNode();  //nextItem
+            int childPosition = 0; //lepsza nazwa
+            T currentBranch = NodeIterable.this.getNode();  //byla czy jest zwrocona -> byl - czy bedzie ?
 
             @Override
             public boolean hasNext() {
-                return !(branchStack.isEmpty() && currentItem.getSize() <= childPosition);
+                return !(branchStack.isEmpty() && currentBranch.getSize() <= childPosition);
             }
 
             @Override
             public T next() {
+                //trzymac getArray np. w kolejce
 
-                if (branchStack.isEmpty() && currentItem.getSize() <= childPosition) return null;
+                //konktrat noSucheElementException --- zamiast null
 
-                if (childPosition >= currentItem.getSize()) {
+                if (branchStack.isEmpty() && currentBranch.getSize() <= childPosition) return null;
+
+                if (childPosition >= currentBranch.getSize()) { //pozabyc sie getSize  //currentBranch nazwa lokalna w metodzie
                     Map.Entry<T, Integer> entry = branchStack.pop();
-                    childPosition = entry.getValue();
-                    currentItem = entry.getKey();
+                    childPosition = entry.getValue(); //mialem bede mial?
+                    currentBranch = entry.getKey();   // stacku - iterable od node?
                     return next();
                 }
-                if (currentItem.getArray()[childPosition].isBranch()) {
-                    if (childPosition + 1 < currentItem.getSize()) {
-                        branchStack.push(new HashMap.SimpleEntry<>(currentItem, childPosition + 1));
+
+                if (currentBranch.getArray()[childPosition].isBranch()) {
+                    if (childPosition + 1 < currentBranch.getSize()) {
+                        branchStack.push(new HashMap.SimpleEntry<>(currentBranch, childPosition + 1));
                     }
-                    currentItem = (T) currentItem.getArray()[childPosition];
+                    currentBranch = (T) currentBranch.getArray()[childPosition]; //sprawdzic i w razie koniecznosci przerobic - uzasadnic/uproscic
                     childPosition = 0;
-                    return currentItem;
+                    return currentBranch; //nie ma czegos takiego jak currentBranch  - operowac na samym stosie (bez child position - iterable )
                 }
-                if (childPosition < currentItem.getSize()) {
+
+                if (childPosition < currentBranch.getSize()) {
                     int index = childPosition++;
-                    return (T) currentItem.getArray()[index];
+                    return (T) currentBranch.getArray()[index];
                 }
                 return null;
             }

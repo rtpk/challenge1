@@ -1,5 +1,8 @@
 package com.technical;
 
+import com.technical.file.NodeFile;
+import com.technical.node.Node;
+import com.technical.node.NodeIterable;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import rx.Observable;
@@ -17,6 +20,16 @@ import java.util.stream.Collectors;
 public class ReactiveTests {
 
     @Test
+    public void testIteratorExists() {
+        File file = new File("C:\\Users\\rtpk\\Downloads\\New folder");
+        NodeIterable root = new NodeIterable<>(new NodeFile(file));
+        for (Object node : root) {
+            System.out.println(((Node)node).getPayload());
+        }
+    }
+
+
+    @Test
     public void testrx() {
         java.io.File tmp = new java.io.File("C:\\Users\\rtpk\\Downloads");
         Observable
@@ -26,7 +39,7 @@ public class ReactiveTests {
                 .subscribe(this::print);
     }
 
-    List<String> childrenOf(File file) {
+    private List<String> childrenOf(File file) {
         return Arrays
                 .asList(file.listFiles())
                 .stream()
