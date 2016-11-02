@@ -14,18 +14,10 @@ public class NodeFile implements Node {
 
     @Override
     public Node[] getArray() {
-        return Arrays.stream(file.listFiles()).map(p -> (new NodeFile(p))).toArray(NodeFile[]::new);
-    }
-
-    @Override
-    public int getSize() {
-        if (file.isFile()) return 1;
-        return getArray().length;
-    }
-
-    @Override
-    public boolean isBranch() {
-        return file.isDirectory();
+        if (file.listFiles() == null)
+            return new NodeFile[0];
+        else
+            return Arrays.stream(file.listFiles()).map(p -> (new NodeFile(p))).toArray(NodeFile[]::new);
     }
 
     @Override

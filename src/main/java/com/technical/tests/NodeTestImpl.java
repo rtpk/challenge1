@@ -14,18 +14,8 @@ public class NodeTestImpl implements Node {
 
     @Override
     public Node[] getArray() {
-            return Arrays.stream(parent.getList().toArray()).map(p -> (new NodeTestImpl((TestObject) p))).toArray(NodeTestImpl[]::new);
-    }
-
-    @Override
-    public int getSize() {
-        if (!isBranch()) return 0;
-        return getArray().length;
-    }
-
-    @Override
-    public boolean isBranch() {
-        return (parent.getList() != null);
+        parent.createList();
+        return Arrays.stream(parent.getList().toArray()).map(p -> (new NodeTestImpl((TestObject) p))).toArray(NodeTestImpl[]::new);
     }
 
     @Override

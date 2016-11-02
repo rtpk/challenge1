@@ -22,6 +22,10 @@ public class TestObject {
         return list;
     }
 
+    public  void createList() {
+        if(list == null) list = new ArrayList<>();
+    }
+
     public TestObject setName(String name) {
         this.name = name;
         return this;

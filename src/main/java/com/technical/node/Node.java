@@ -1,15 +1,16 @@
 package com.technical.node;
 
+import javax.validation.constraints.NotNull;
+
 public interface Node {
 
-
-    //zabronci null kontrakt  1.@notnull 2.dokumentacja
+    /**
+     * Returns array.
+     * @return array of Nodes
+     */
+    @NotNull
     Node[] getArray();
 
-    boolean isBranch(); //pozbycSie
-
     String getPayload();
-
-    int getSize(); //pozbycSie
 
 }
