@@ -5,52 +5,47 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class NodeIterable<T extends Node> implements Iterable {
-    private T node;
+public class NodeIterable<T> implements Iterable {
+    private Node<T> node;
 
-    public NodeIterable(T node) {
+    public NodeIterable(Node<T> node) {
         this.node = node;
     }
-
-    private T getNode() {
-        return node;
-    }
-
 
     public Iterator<T> iterator() {
         return new Iterator<T>() {
 
-            ArrayDeque<ArrayDeque<Node>> branchesStack = new ArrayDeque<>();
-            ArrayDeque<Node> nodesQueue = new ArrayDeque<>();
-            @SuppressWarnings("unchecked")
-            T node = NodeIterable.this.getNode();
+            ArrayDeque<Node<T>> knownBranchesToTravese = new ArrayDeque<>();
+            ArrayDeque<Node<T>> nodesToReturn = new ArrayDeque<>();
+
             {
-                Collections.addAll(nodesQueue, node.getArray());
+                Collections.addAll(nodesToReturn, NodeIterable.this.node.getArray());
+                nodesToReturn.stream().filter(node -> node.getArray().length > 0).forEach(knownBranchesToTravese::push);
             }
 
             @Override
             public boolean hasNext() {
-                return (!branchesStack.isEmpty() || !nodesQueue.isEmpty());
+                return (!knownBranchesToTravese.isEmpty() || !nodesToReturn.isEmpty());
             }
 
             @Override
             public T next() {
+                if (knownBranchesToTravese.isEmpty() && nodesToReturn.isEmpty()) throw new NoSuchElementException();
 
-                if (branchesStack.isEmpty() && nodesQueue.isEmpty()) throw new NoSuchElementException();
-
-                if (nodesQueue.isEmpty()) {
-                    nodesQueue.addAll(branchesStack.pop());
+                if (!nodesToReturn.isEmpty()) {
+                    return nodesToReturn.poll().getPayload();
                 }
 
-                node = (T) nodesQueue.poll();
-                if (node.getArray().length > 0) {
-                    if (!nodesQueue.isEmpty())
-                        branchesStack.push(nodesQueue.clone());
-                    nodesQueue.clear();
-                    Collections.addAll(nodesQueue, node.getArray());
-                }
-                return node;
+                Node<T> resultNode = knownBranchesToTravese.pop();
 
+                if (resultNode.getArray().length > 0) {
+                    Collections.addAll(nodesToReturn, resultNode.getArray());
+                }
+
+                if (!nodesToReturn.isEmpty()) {
+                    nodesToReturn.stream().filter(node -> node.getArray().length > 0).forEach(knownBranchesToTravese::push);
+                }
+                return resultNode.getPayload();
             }
         };
     }

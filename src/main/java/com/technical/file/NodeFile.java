@@ -5,7 +5,7 @@ import com.technical.node.Node;
 import java.io.File;
 import java.util.Arrays;
 
-public class NodeFile implements Node {
+public class NodeFile implements Node<File> {
 
     private java.io.File file;
 
@@ -23,8 +23,8 @@ public class NodeFile implements Node {
     }
 
     @Override
-    public String getPayload() {
-        return file.getAbsolutePath();
+    public File getPayload() {
+        return file;
     }
 
 }

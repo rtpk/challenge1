@@ -1,6 +1,5 @@
 package com.technical;
 
-import com.technical.node.Node;
 import com.technical.node.NodeIterable;
 import com.technical.tests.NodeTestImpl;
 import com.technical.tests.TestObject;
@@ -21,10 +20,10 @@ public class NodeIterableTest {
     public void shouldHasNextIsFalseNoMoreElements() {
         //Given:
         TestObject rootParent = TestObject.build().setName("file");
-        NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(rootParent));
+        NodeIterable<String> root = new NodeIterable<>(new NodeTestImpl(rootParent));
 
         //When:
-        Iterator<NodeTestImpl> it = root.iterator();
+        Iterator<String> it = root.iterator();
 
         //Then:
         assertThat(it.hasNext()).isFalse();
@@ -36,10 +35,10 @@ public class NodeIterableTest {
         //Given:
         TestObject rootParent = TestObject.build();
         rootParent.add(TestObject.build().setName("leaf"));
-        NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(rootParent));
+        NodeIterable<String> root = new NodeIterable<>(new NodeTestImpl(rootParent));
 
         //When:
-        Iterator<NodeTestImpl> it = root.iterator();
+        Iterator<String> it = root.iterator();
 
         //Then:
         assertThat(it.hasNext()).isTrue();
@@ -51,17 +50,17 @@ public class NodeIterableTest {
         //Given:
         TestObject testObj = TestObject.build();
         testObj.add(TestObject.build().setName("branch")).add(TestObject.build().setName("leaf"));
-        NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
+        NodeIterable<String> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator<NodeTestImpl> firstIterator = root.iterator();
-        Iterator<NodeTestImpl> secondIterator = root.iterator();
+        Iterator<String> firstIterator = root.iterator();
+        Iterator<String> secondIterator = root.iterator();
 
-        Node objFirstIterator = firstIterator.next();
-        Node objSecondIterator = secondIterator.next();
+        String objFirstIterator = firstIterator.next();
+        String objSecondIterator = secondIterator.next();
 
         //Then:
-        assertThat(objFirstIterator.getPayload()).isEqualTo(objSecondIterator.getPayload());
+        assertThat(objFirstIterator).isEqualTo(objSecondIterator);
     }
 
 
@@ -70,10 +69,10 @@ public class NodeIterableTest {
         //Given:
         TestObject testObj = TestObject.build().setName("root");
         testObj.add(TestObject.build());
-        NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
+        NodeIterable<String> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //Then:
-        assertThat(root.iterator().next().getPayload()).isEqualTo("null");
+        assertThat(root.iterator().next()).isEqualTo("null");
     }
 
     @Test
@@ -84,14 +83,14 @@ public class NodeIterableTest {
         testObj.add(TestObject.build().setName("branch2").add(TestObject.build().setName("branch4").add(TestObject.build().setName("leaf5"))));
         testObj.add(TestObject.build().setName("branch3").add(TestObject.build().setName("leaf3")));
         testObj.add(TestObject.build().setName("leaf4"));
-        NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
+        NodeIterable<String> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator<NodeTestImpl> it = root.iterator();
+        Iterator<String> it = root.iterator();
         List<String> paths = new ArrayList<>();
         while (it.hasNext()) {
-            Node temp = it.next();
-            paths.add(temp.getPayload());
+            String temp = it.next();
+            paths.add(temp);
         }
 
         //Then
@@ -115,15 +114,15 @@ public class NodeIterableTest {
         testObj.add(TestObject.build().setName("branch2").add(TestObject.build().setName("branch4").add(TestObject.build().setName("leaf5"))));
         testObj.add(TestObject.build().setName("branch3").add(TestObject.build().setName("leaf3")));
         testObj.add(TestObject.build().setName("leaf4"));
-        NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
+        NodeIterable<String> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator<NodeTestImpl> it = root.iterator();
+        Iterator<String> it = root.iterator();
         @SuppressWarnings("unchecked")
-        List<String> results = (List<String>) StreamSupport.stream(root.spliterator(), false).map(o -> ((Node)o).getPayload()).collect(Collectors.toList());
+        List<String> results = (List<String>) StreamSupport.stream(root.spliterator(), false).map(o -> (o)).collect(Collectors.toList());
 
         //Then
-        assertThat(it).extracting(p -> (p).getPayload()).isEqualTo(results);
+        assertThat(it).extracting(p -> (p)).isEqualTo(results);
     }
 
 

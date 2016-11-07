@@ -1,12 +1,12 @@
 package com.technical;
 
-import com.technical.node.Node;
 import com.technical.file.NodeFile;
 import com.technical.node.NodeIterable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +21,7 @@ public class FileTests {
 
     @Test
     public void hasNextEmptyCollection() {
-        NodeIterable<NodeFile> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
+        NodeIterable<File> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
         Iterator it = root.iterator();
         assertThat(it.hasNext()).isFalse();
     }
@@ -29,26 +29,26 @@ public class FileTests {
     @Test
     public void hasNextOneElementCollection() throws IOException {
         folder.newFile("file3.txt");
-        NodeIterable<NodeFile> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
+        NodeIterable<File> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
         Iterator it = root.iterator();
         assertThat(it.hasNext()).isTrue();
     }
 
     @Test
     public void testIteratorOnFiles() throws IOException {
-
+ //bardziej unierwralne windows / linux  - google wirtual file system
         folder.newFolder("folder1", "file2.txt");
         folder.newFolder("folder3", "folder4");
         folder.newFolder("folder2", "folder5", "file1.txt");
         folder.newFile("file3.txt");
 
-        NodeIterable<NodeFile> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
+        NodeIterable<File> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
 
-        Iterator it = root.iterator();
+        Iterator<File> it = root.iterator();
         List<String> paths = new ArrayList<>();
 
         while (it.hasNext()) {
-            paths.add(((Node)it.next()).getPayload());
+            paths.add(it.next().getAbsolutePath());
         }
         assertThat(paths).contains(
                 folder.getRoot().toString() + "\\folder1\\file2.txt",
@@ -63,12 +63,12 @@ public class FileTests {
         folder.newFolder("folder1", "file2.txt");
         folder.newFolder("folder3", "folder4");
 
-        NodeIterable<NodeFile> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
+        NodeIterable<File> root = new NodeIterable<>(new NodeFile(folder.getRoot()));
 
         Iterator firstIterator = root.iterator();
         Iterator secondIterator = root.iterator();
 
-        assertThat(((Node)firstIterator.next()).getPayload()).isEqualTo(((Node)secondIterator.next()).getPayload());
+        assertThat((firstIterator.next())).isEqualTo((secondIterator.next()));
     }
 
 

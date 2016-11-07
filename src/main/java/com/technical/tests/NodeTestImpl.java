@@ -4,7 +4,7 @@ import com.technical.node.Node;
 
 import java.util.Arrays;
 
-public class NodeTestImpl implements Node {
+public class NodeTestImpl implements Node<String> {
 
     private TestObject parent;
 
