@@ -5,10 +5,6 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Iterator;
 
-/**
- * Created by Robert Piotrowski on 03/10/2016.
- */
-
 public class Calendar implements Iterable<LocalDate> {
 
     private LocalDate startDate;
@@ -19,7 +15,7 @@ public class Calendar implements Iterable<LocalDate> {
 
     @Override
     public Iterator<LocalDate> iterator() {
-        Iterator<LocalDate> it = new Iterator<LocalDate>() {
+        return new Iterator<LocalDate>() {
 
             LocalDate state = startDate;
 
@@ -37,7 +33,6 @@ public class Calendar implements Iterable<LocalDate> {
                 return state;
             }
         };
-        return it;
     }
 
     public LocalDate getStartDate() {

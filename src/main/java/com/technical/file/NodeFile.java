@@ -2,6 +2,7 @@ package com.technical.file;
 
 import com.technical.node.Node;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class NodeFile implements Node {
@@ -14,10 +15,11 @@ public class NodeFile implements Node {
 
     @Override
     public Node[] getArray() {
-        if (file.listFiles() == null)
+        File[] result = file.listFiles();
+        if (result == null)
             return new NodeFile[0];
         else
-            return Arrays.stream(file.listFiles()).map(p -> (new NodeFile(p))).toArray(NodeFile[]::new);
+            return Arrays.stream(result).map(p -> (new NodeFile(p))).toArray(NodeFile[]::new);
     }
 
     @Override

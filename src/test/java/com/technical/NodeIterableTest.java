@@ -24,7 +24,7 @@ public class NodeIterableTest {
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(rootParent));
 
         //When:
-        Iterator it = root.iterator();
+        Iterator<NodeTestImpl> it = root.iterator();
 
         //Then:
         assertThat(it.hasNext()).isFalse();
@@ -39,7 +39,7 @@ public class NodeIterableTest {
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(rootParent));
 
         //When:
-        Iterator it = root.iterator();
+        Iterator<NodeTestImpl> it = root.iterator();
 
         //Then:
         assertThat(it.hasNext()).isTrue();
@@ -54,11 +54,11 @@ public class NodeIterableTest {
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator firstIterator = root.iterator();
-        Iterator secondIterator = root.iterator();
+        Iterator<NodeTestImpl> firstIterator = root.iterator();
+        Iterator<NodeTestImpl> secondIterator = root.iterator();
 
-        Node objFirstIterator = (Node) firstIterator.next();
-        Node objSecondIterator = (Node) secondIterator.next();
+        Node objFirstIterator = firstIterator.next();
+        Node objSecondIterator = secondIterator.next();
 
         //Then:
         assertThat(objFirstIterator.getPayload()).isEqualTo(objSecondIterator.getPayload());
@@ -87,10 +87,10 @@ public class NodeIterableTest {
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator it = root.iterator();
+        Iterator<NodeTestImpl> it = root.iterator();
         List<String> paths = new ArrayList<>();
         while (it.hasNext()) {
-            Node temp = (Node) it.next();
+            Node temp = it.next();
             paths.add(temp.getPayload());
         }
 
@@ -106,6 +106,7 @@ public class NodeIterableTest {
     }
 
 
+
     @Test
     public void shouldIterateOnComplexTreeOnStreams() {
         //Given:
@@ -117,12 +118,15 @@ public class NodeIterableTest {
         NodeIterable<NodeTestImpl> root = new NodeIterable<>(new NodeTestImpl(testObj));
 
         //When:
-        Iterator it = root.iterator();  //dokladniej - uzasadnic generic
+        Iterator<NodeTestImpl> it = root.iterator();
+        @SuppressWarnings("unchecked")
         List<String> results = (List<String>) StreamSupport.stream(root.spliterator(), false).map(o -> ((Node)o).getPayload()).collect(Collectors.toList());
 
         //Then
-        assertThat(it).extracting(p -> ((Node)p).getPayload()).isEqualTo(results);
+        assertThat(it).extracting(p -> (p).getPayload()).isEqualTo(results);
     }
+
+
 
 
 }

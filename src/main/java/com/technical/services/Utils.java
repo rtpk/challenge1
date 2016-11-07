@@ -6,9 +6,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by Robert Piotrowski on 05/10/2016.
- */
 @Slf4j
 @Service
 public class Utils {

@@ -7,12 +7,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-/**
- * Created by Robert Piotrowski on 23/08/2016.
- */
-
 @Controller
-public class WebsocketsStompServices {
+class WebsocketsStompServices {
 
     private final SimpMessagingTemplate template;
     private final Utils utils;
