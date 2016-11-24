@@ -20,7 +20,12 @@ class WebsocketsStompServices {
     }
 
     @MessageMapping("/files")
-    public String checkUpdates(String pathName) throws Exception {
-        return String.valueOf(utils.createFileByPath(pathName));
+    public void addFile(String pathName) throws Exception {
+     utils.createFileByPath(pathName);
     }
+
+    public void sendFilesListing(String content) {
+        this.template.convertAndSend("/filesList", content);
+    }
+
 }

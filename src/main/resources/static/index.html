@@ -20,11 +20,21 @@
             stompClient.connect({}, function(frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/app/files');
-                });
-            });
-        }
-        
+                stompClient.subscribe('/app/filesList', function(data) {
+
+                var message = data.body;
+                var array = JSON.parse("[" + message + "]");
+                console.log('Array: '+array);
+                var array2 = array.toString().split(',');
+                messageList.empty();
+                    for(i = 0;i<array2.length;i++){
+                   messageList.append(array2[i]+"<br>");
+                    }
+            });
+            });
+
+            };
+
         function disconnect() {
             if (stompClient != null) {
                 stompClient.disconnect();
@@ -32,12 +42,11 @@
             setConnected(false);
             console.log("Disconnected");
         }
-        
-        function sendName() {
-            var namePath = document.getElementById('name').value;
-            stompClient.send("/app/files", {}, namePath);
-        }
 
+        function sendName() {
+            var pathName = document.getElementById('name').value;
+            stompClient.send("/app/files", {}, pathName);
+        }
     </script>
 </head>
 <body onload="disconnect()">

@@ -36,7 +36,6 @@ public class FileTests {
 
     @Test
     public void testIteratorOnFiles() throws IOException {
- //bardziej unierwralne windows / linux  - google wirtual file system
         folder.newFolder("folder1", "file2.txt");
         folder.newFolder("folder3", "folder4");
         folder.newFolder("folder2", "folder5", "file1.txt");
@@ -71,14 +70,14 @@ public class FileTests {
         assertThat((firstIterator.next())).isEqualTo((secondIterator.next()));
     }
 
+    @Test
+    public void testIteratorExists() {
+        File file = new File("C:\\Users\\rtpk\\Downloads\\New Folder");
+        NodeIterable<File> root = new NodeIterable<>(new NodeFile(file));
 
-//    @Test
-//    public void testIteratorExists() {
-//        File file = new File("C:\\Users\\rtpk\\Downloads");
-//        NodeIterable<NodeFile> root = new NodeIterable<>(new NodeFile(file));
-//
-//        for (Object node : root) {
-//            System.out.println(node.toString());
-//        }
-//    }
+        for (Object node : root) {
+            System.out.println(node.toString());
+        }
+    }
+
 }

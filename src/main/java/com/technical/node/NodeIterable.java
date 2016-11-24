@@ -15,37 +15,27 @@ public class NodeIterable<T> implements Iterable {
     public Iterator<T> iterator() {
         return new Iterator<T>() {
 
-            ArrayDeque<Node<T>> knownBranchesToTravese = new ArrayDeque<>();
             ArrayDeque<Node<T>> nodesToReturn = new ArrayDeque<>();
 
             {
                 Collections.addAll(nodesToReturn, NodeIterable.this.node.getArray());
-                nodesToReturn.stream().filter(node -> node.getArray().length > 0).forEach(knownBranchesToTravese::push);
             }
 
             @Override
             public boolean hasNext() {
-                return (!knownBranchesToTravese.isEmpty() || !nodesToReturn.isEmpty());
+                return (!nodesToReturn.isEmpty());
             }
 
             @Override
             public T next() {
-                if (knownBranchesToTravese.isEmpty() && nodesToReturn.isEmpty()) throw new NoSuchElementException();
+                if (nodesToReturn.isEmpty()) throw new NoSuchElementException();
 
-                if (!nodesToReturn.isEmpty()) {
-                    return nodesToReturn.poll().getPayload();
+                Node<T> node = nodesToReturn.poll();
+                if (node.getArray().length > 0) {
+                    Collections.addAll(nodesToReturn, node.getArray());
                 }
 
-                Node<T> resultNode = knownBranchesToTravese.pop();
-
-                if (resultNode.getArray().length > 0) {
-                    Collections.addAll(nodesToReturn, resultNode.getArray());
-                }
-
-                if (!nodesToReturn.isEmpty()) {
-                    nodesToReturn.stream().filter(node -> node.getArray().length > 0).forEach(knownBranchesToTravese::push);
-                }
-                return resultNode.getPayload();
+                return node.getPayload();
             }
         };
     }
