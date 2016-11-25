@@ -21,7 +21,6 @@ public class NodeIterableRx<T> {
         return result;
     }
 
-
     public Observable<T> fromIterable(final Iterable<T> iterable) {
         return Observable.create(
                 subscriber -> {
@@ -39,7 +38,6 @@ public class NodeIterableRx<T> {
                     }
                 });
     }
-
 
     public BlockingObservable<T> convert2(NodeIterable<T> source) {
         return Observable.interval(1, TimeUnit.SECONDS)
