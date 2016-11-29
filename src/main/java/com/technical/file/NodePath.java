@@ -25,7 +25,7 @@ public class NodePath implements Node<Path> {
                 e.printStackTrace();
             }
         }
-        return new NodeFile[0];
+        return new NodePath[0];
     }
 
     @Override

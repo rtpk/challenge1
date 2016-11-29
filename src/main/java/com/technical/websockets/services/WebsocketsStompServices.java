@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import rx.observables.BlockingObservable;
 
 import java.io.File;
 
@@ -32,11 +31,11 @@ class WebsocketsStompServices {
         File file = new File("C:\\Users\\rtpk\\Downloads\\New folder");
         NodeIterable<File> root = new NodeIterable<>(new NodeFile(file));
         NodeIterableRx<File> temp = new NodeIterableRx<>();
-        BlockingObservable<File> result = temp.convert2(root);
-        result.subscribe(
-                element -> {
-                    sendFilesListing(element.toString());
-                });
+//        BlockingObservable<File> result = temp.convert(root);
+//        result.subscribe(
+//                element -> {
+//                    sendFilesListing(element.toString());
+//                });
     }
 
 

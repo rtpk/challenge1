@@ -8,13 +8,20 @@ import rx.Subscriber;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.*;
 
-public final class PathRx {
+public final class PathRx implements Runnable{
+
+
+    public void run(){
+        System.out.println("My thread is in running state.");
+    }
 
     private PathRx() {
     }
@@ -28,6 +35,7 @@ public final class PathRx {
         private final WatchService watcher;
         private final Map<WatchKey, Path> directoriesByKey = new HashMap<>();
         private final Path directory;
+        private final List<Subscriber> subscriberList = new ArrayList<>();
 
         private ObservableFactory(final Path path) throws IOException {
             final FileSystem fileSystem = path.getFileSystem();
@@ -36,8 +44,13 @@ public final class PathRx {
         }
 
         private Observable<WatchEvent<?>> create() {
-            return Observable.create(subscriber -> { //lokalna lista //drugi watek blokujace zdarzenie - jak cos sie zjawi wysle do wszystkich na liscie //na koncu czyszczecnie zasobow wlasnych dla watku -
-                //
+            return Observable.create(subscriber -> {
+                subscriberList.add(subscriber);   //lokalna lista
+
+                //drugi watek blokujace zdarzenie - jak cos sie zjawi wysle do wszystkich na liscie
+                //na koncu czyszczecnie zasobow wlasnych dla watku
+                //wyjątek IterruptedException
+
                 boolean errorFree = true;
                 try {
                     registerAll(directory);
@@ -74,9 +87,7 @@ public final class PathRx {
             });
         }
 
-        //work in progress
         private void registerAll(final Path rootDirectory) throws IOException {
-
             NodeIterable<Path> root = new NodeIterable<>(new NodePath(rootDirectory));
             NodeIterableRx<Path> temp = new NodeIterableRx<>();
             Observable<Path> result = temp.convert(root);
@@ -97,10 +108,10 @@ public final class PathRx {
 
         @SuppressWarnings("unchecked")
         static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-            return (WatchEvent<T>)event;
+            return (WatchEvent<T>) event;
         }
 
-        private void registerNewDirectory(final Subscriber<? super WatchEvent<?>> subscriber, final Path dir,  final WatchEvent<?> event) {
+        private void registerNewDirectory(final Subscriber<? super WatchEvent<?>> subscriber, final Path dir, final WatchEvent<?> event) {
             final Kind<?> kind = event.kind();
             if (kind.equals(ENTRY_CREATE)) {
                 @SuppressWarnings("unchecked")
