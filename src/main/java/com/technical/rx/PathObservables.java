@@ -103,7 +103,7 @@ public final class PathObservables {
                 final Path child = dir.resolve(name);
                 try {
                     if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
-                        registerAll(child);
+                        register(child);
                     }
                 } catch (final IOException exception) {
                     subscriber.onError(exception);

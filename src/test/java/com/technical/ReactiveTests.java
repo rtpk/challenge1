@@ -51,7 +51,7 @@ public class ReactiveTests {
     }
 
     @Test
-    public void shouldObserveAddOneFileExperimental() throws IOException, InterruptedException {
+    public void shouldObserveAddOneFileObservable() throws IOException, InterruptedException {
 
         //Given
         FileSystem rootFile = FileSystems.getDefault(); //Jimfs.newFileSystem(Configuration.unix());
@@ -59,14 +59,16 @@ public class ReactiveTests {
         final List<WatchEvent<?>> events = new LinkedList<>();
 
         observable.subscribeOn(Schedulers.io()).subscribe(events::add);
-
+        Thread.sleep(1000);
         //When
         Path file = rootFile.getPath("C:\\Users\\rtpk\\Downloads\\New folder\\New folder\\file.txt");
         Files.createFile(file);
-        Thread.sleep(10);
-        final WatchEvent<?> event = events.get(0);
-        System.out.println("test "  + events.size());
+        Thread.sleep(1000);
 
+        //Then
+        final WatchEvent<?> event = events.get(0);
+        assertThat(event.context()).isEqualTo(file.getFileName());
+        Files.delete(file);
     }
 
 
