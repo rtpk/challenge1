@@ -12,14 +12,14 @@ import java.util.Map;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-public class FileRx {
+public class FileRxOld {
 
     private final WatchService watcher;
     private final Map<WatchKey, Path> keys;
     private final Path rootFile;
 
     //Creates a WatchService and registers the given directory
-    public FileRx(Path dir) throws IOException {
+    public FileRxOld(Path dir) throws IOException {
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<>();
         this.rootFile = dir;

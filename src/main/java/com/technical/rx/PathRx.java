@@ -14,15 +14,14 @@ import java.util.Map;
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.*;
 
-public final class PathObservables {
+public final class PathRx {
 
-    private PathObservables() {
+    private PathRx() {
     }
 
-    public static Observable<WatchEvent<?>> watchRecursive(final Path path) throws IOException {
+    public static Observable<WatchEvent<?>> watch(final Path path) throws IOException {
         return new ObservableFactory(path).create();
     }
-
 
     private static class ObservableFactory {
 
@@ -94,11 +93,17 @@ public final class PathObservables {
             directoriesByKey.put(key, dir);
         }
 
+
+        @SuppressWarnings("unchecked")
+        static <T> WatchEvent<T> cast(WatchEvent<?> event) {
+            return (WatchEvent<T>)event;
+        }
+
         private void registerNewDirectory(final Subscriber<? super WatchEvent<?>> subscriber, final Path dir,  final WatchEvent<?> event) {
             final Kind<?> kind = event.kind();
             if (kind.equals(ENTRY_CREATE)) {
                 @SuppressWarnings("unchecked")
-                final WatchEvent<Path> eventWithPath = (WatchEvent<Path>) event;
+                final WatchEvent<Path> eventWithPath = cast(event);
                 final Path name = eventWithPath.context();
                 final Path child = dir.resolve(name);
                 try {

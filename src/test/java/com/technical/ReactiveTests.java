@@ -1,7 +1,9 @@
 package com.technical;
 
-import com.technical.rx.FileRx;
-import com.technical.rx.PathObservables;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
+import com.technical.rx.FileRxOld;
+import com.technical.rx.PathRx;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import rx.Observable;
@@ -29,11 +31,11 @@ public class ReactiveTests {
 
         //Given
         FileSystem rootFile = FileSystems.getDefault(); //Jimfs.newFileSystem(Configuration.unix());
-        FileRx fileRx = new FileRx(rootFile.getPath("C:\\Users\\rtpk\\Downloads\\New folder"));
-        Observable<FileRx> fileRxObservable = Observable.just(fileRx);
+        FileRxOld fileRxOld = new FileRxOld(rootFile.getPath("C:\\Users\\rtpk\\Downloads\\New folder"));
+        Observable<FileRxOld> fileRxObservable = Observable.just(fileRxOld);
         List<Path> listResult = Collections.synchronizedList(new ArrayList<>());
 
-        Observable<Path> fileObservable = fileRx.observeChanges();
+        Observable<Path> fileObservable = fileRxOld.observeChanges();
 
         fileRxObservable.observeOn(Schedulers.io()).subscribe(p -> {
             System.out.println("TEST " + p.getKeys()); //work in progress
@@ -54,8 +56,8 @@ public class ReactiveTests {
     public void shouldObserveAddOneFileObservable() throws IOException, InterruptedException {
 
         //Given
-        FileSystem rootFile = FileSystems.getDefault(); //Jimfs.newFileSystem(Configuration.unix());
-        final Observable<WatchEvent<?>> observable = PathObservables.watchRecursive(rootFile.getPath("C:\\Users\\rtpk\\Downloads\\New folder"));
+        FileSystem rootFile = FileSystems.getDefault();
+        final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("C:\\Users\\rtpk\\Downloads\\New folder"));
         final List<WatchEvent<?>> events = new LinkedList<>();
 
         observable.subscribeOn(Schedulers.io()).subscribe(events::add);
@@ -69,6 +71,28 @@ public class ReactiveTests {
         final WatchEvent<?> event = events.get(0);
         assertThat(event.context()).isEqualTo(file.getFileName());
         Files.delete(file);
+    }
+
+
+    @Test
+    public void shouldObserveAddOneFileObservableJimfs() throws IOException, InterruptedException {
+
+        //Given
+        FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
+        final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+        final List<WatchEvent<?>> events = new LinkedList<>();
+        Files.createDirectories(rootFile.getPath("/root/folder1"));
+
+        observable.subscribeOn(Schedulers.io()).subscribe(events::add);
+        Thread.sleep(3000);
+
+        //When
+        Files.createFile(rootFile.getPath("/root/folder1/file2.txt"));
+        Thread.sleep(3000);
+
+        //Then
+        final WatchEvent<?> event = events.get(0);
+        assertThat(event.context()).isEqualTo(rootFile.getPath("/root//folder1/file2.txt").getFileName());
     }
 
 
