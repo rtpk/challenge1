@@ -29,7 +29,9 @@ public class ReactiveTests {
     public void shouldObserveAddOneFile() throws IOException, InterruptedException {
         //Given
         FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
-        final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+        PathRx pathRx =  new PathRx(rootFile.getPath("/root"));
+        pathRx.start();
+        final Observable<WatchEvent<?>> observable = pathRx.watch();
         final BlockingQueue<WatchEvent<?>> events = new LinkedBlockingQueue<>(); //kolekcja wielatkowa
         Files.createDirectories(rootFile.getPath("/root/folder1"));
 
