@@ -46,7 +46,6 @@ class WebsocketsStompServices {
     }
 
     public void sendFilesListing(String content) {
-        log.info("WYSLANO");
         this.template.convertAndSend("/filesList", content);
     }
 

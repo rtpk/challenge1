@@ -6,7 +6,6 @@ import rx.Observable;
 import rx.observables.BlockingObservable;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -16,27 +15,7 @@ import java.util.stream.StreamSupport;
 public class NodeIterableRx<T> {
 
     public Observable<T> convert(Iterable<T> source) {
-        Observable<T> result = Observable.from(source);
-        result.distinct();
-        return result;
-    }
-
-    public Observable<T> fromIterable(final Iterable<T> iterable) {
-        return Observable.create(
-                subscriber -> {
-                    try {
-                        Iterator<T> iterator = iterable.iterator();
-                        while (!subscriber.isUnsubscribed()) {
-                            if (iterator.hasNext())
-                                subscriber.onNext(iterator.next());
-                            else iterator = iterable.iterator();
-                        }
-                    } catch (Exception e) {
-                        if (!subscriber.isUnsubscribed()) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
+        return Observable.from(source);
     }
 
     public BlockingObservable<T> convert2(NodeIterable<T> source) {
