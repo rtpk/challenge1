@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import rx.Observable;
 import rx.schedulers.Schedulers;
+import rx.subjects.ReplaySubject;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,23 +77,23 @@ public class ReactiveTests {
 
     @Test
     public void shouldObserveAddOneFileObservableJimfs() throws IOException, InterruptedException {
-
         //Given
         FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
         final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
-        final List<WatchEvent<?>> events = new LinkedList<>();
+        final List<WatchEvent<?>> events = new LinkedList<>(); // kolekcja wielowatkowa
         Files.createDirectories(rootFile.getPath("/root/folder1"));
 
-        observable.subscribeOn(Schedulers.io()).subscribe(events::add);
-        Thread.sleep(3000);
+        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
+
+        observable.subscribe(replaySubject);
 
         //When
         Files.createFile(rootFile.getPath("/root/folder1/file2.txt"));
-        Thread.sleep(3000);
 
         //Then
-        final WatchEvent<?> event = events.get(0);
-        assertThat(event.context()).isEqualTo(rootFile.getPath("/root//folder1/file2.txt").getFileName());
+        final WatchEvent<?> event = replaySubject.toBlocking().first();
+        assertThat(event.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt"));
+
     }
 
 

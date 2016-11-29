@@ -36,7 +36,8 @@ public final class PathRx {
         }
 
         private Observable<WatchEvent<?>> create() {
-            return Observable.create(subscriber -> {
+            return Observable.create(subscriber -> { //lokalna lista //drugi watek blokujace zdarzenie - jak cos sie zjawi wysle do wszystkich na liscie //na koncu czyszczecnie zasobow wlasnych dla watku -
+                //
                 boolean errorFree = true;
                 try {
                     registerAll(directory);
