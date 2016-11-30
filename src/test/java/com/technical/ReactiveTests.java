@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.WatchEvent;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,21 +27,24 @@ public class ReactiveTests {
     public void shouldObserveAddOneFile() throws IOException, InterruptedException {
         //Given
         FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
-        PathRx pathRx =  new PathRx(rootFile.getPath("/root"));
-        pathRx.start();
-        final Observable<WatchEvent<?>> observable = pathRx.watch();
-        final BlockingQueue<WatchEvent<?>> events = new LinkedBlockingQueue<>(); //kolekcja wielatkowa
+        final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+         //kolekcja wielatkowa
         Files.createDirectories(rootFile.getPath("/root/folder1"));
 
         ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
+        ReplaySubject<WatchEvent<?>> replaySubject2 = ReplaySubject.create();
         observable.subscribe(replaySubject);
+        observable.subscribe(replaySubject2);
 
         //When
         Files.createFile(rootFile.getPath("/root/folder1/file2.txt"));
-
+        Files.createDirectories(rootFile.getPath("/root/folder1/file32/file4"));
         //Then
         final WatchEvent<?> event = replaySubject.toBlocking().first();
-        assertThat(event.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt"));
+
+        replaySubject2.subscribe(p -> System.out.println("asdasd " + p));
+
+        assertThat(event.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt").getFileName());
     }
 
 
