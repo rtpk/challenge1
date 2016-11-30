@@ -8,12 +8,12 @@ import rx.Subscriber;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -32,7 +32,7 @@ public final class PathRx {
         private final WatchService watcher;
         private final Map<WatchKey, Path> directoriesByKey = new HashMap<>();
         private final Path directory;
-        private final BlockingQueue<Subscriber> subscriberList = new LinkedBlockingQueue<>();
+        private final List<Subscriber> subscriberList = new ArrayList<>(); //kolekcja wielowatkowa?
         boolean errorFree = true;
 
         private ObservableFactory(final Path path) throws IOException {
@@ -46,16 +46,17 @@ public final class PathRx {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 System.out.println("nowy watek");
-                try {
-                    registerAll(directory);
-                } catch (IOException exception) {
-                    subscriberList.forEach(s -> s.onError(exception));
-                    errorFree = false;
-                }
+
                 while (errorFree) {
                     System.out.println("subscriberList size " + subscriberList.size());
                     final WatchKey key;
-                    key = watcher.poll();
+                    try {
+                        key = watcher.take();
+                    } catch (InterruptedException exception) {
+                        subscriberList.forEach(s -> s.onError(exception));
+                        errorFree = false;
+                        break;
+                    }
                     final Path dir = directoriesByKey.get(key);
                     for (final WatchEvent<?> event : key.pollEvents()) {
                         subscriberList.forEach(s -> s.onNext(event));
@@ -79,11 +80,16 @@ public final class PathRx {
             return Observable.create(subscriber -> {
                 subscriberList.add(subscriber);
                 System.out.println(subscriber.toString());
-
                 //lokalna lista
                 //drugi watek blokujace zdarzenie - jak cos sie zjawi wysle do wszystkich na liscie
                 //na koncu czyszczecnie zasobow wlasnych dla watku
                 //wyjątek IterruptedException
+                try {
+                    registerAll(directory);
+                } catch (IOException exception) {
+                    subscriberList.forEach(s -> s.onError(exception));
+                    errorFree = false;
+                }
 
             });
         }
@@ -103,7 +109,8 @@ public final class PathRx {
 
         private void register(final Path dir) throws IOException {
             final WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-            directoriesByKey.put(key, dir);
+            if (!directoriesByKey.containsKey(key))
+                directoriesByKey.put(key, dir);
         }
 
 
