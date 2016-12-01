@@ -31,18 +31,37 @@ public class ReactiveTests {
         Files.createDirectories(rootFile.getPath("/root/folder1"));
 
         ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
+        observable.subscribe(replaySubject);
+
+        //When
+        Files.createFile(rootFile.getPath("/root/folder1/file2.txt"));
+
+        //Then
+        final WatchEvent<?> event = replaySubject.toBlocking().first();
+        assertThat(event.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt").getFileName());
+    }
+
+    @Test
+    public void shouldObserveAddOneFileWithTwoSubscribers() throws IOException, InterruptedException {
+        //Given
+        FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
+        final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+        Files.createDirectories(rootFile.getPath("/root/folder1"));
+
+        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
         ReplaySubject<WatchEvent<?>> replaySubject2 = ReplaySubject.create();
         observable.subscribe(replaySubject);
         observable.subscribe(replaySubject2);
 
         //When
         Files.createFile(rootFile.getPath("/root/folder1/file2.txt"));
-        Files.createDirectories(rootFile.getPath("/root/folder1/file32/file4"));
+        Files.createFile(rootFile.getPath("/root/folder1/file3.txt"));
 
         //Then
-        final WatchEvent<?> event = replaySubject.toBlocking().first();
-        replaySubject2.subscribe(p -> System.out.println("ReactiveTests.shouldObserveAddOneFile"));
+        WatchEvent<?> event = replaySubject.toBlocking().first();
+        WatchEvent<?> event2 = replaySubject.toBlocking().first();
         assertThat(event.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt").getFileName());
+        assertThat(event2.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt").getFileName());
     }
 
 

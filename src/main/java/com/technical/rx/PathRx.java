@@ -3,17 +3,14 @@ package com.technical.rx;
 import com.technical.file.NodePath;
 import com.technical.node.NodeIterable;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Queue;
+import java.util.concurrent.*;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -30,25 +27,22 @@ public final class PathRx {
     private static class ObservableFactory {
 
         private final WatchService watcher;
-        private final Map<WatchKey, Path> directoriesByKey = new HashMap<>();
         private final Path directory;
-        private final List<Subscriber> subscriberList = new ArrayList<>(); //kolekcja wielowatkowa?
+        private final ConcurrentMap<WatchKey, Path> directoriesByKey = new ConcurrentHashMap<>();
+        private final Queue<Subscriber> subscriberList = new ConcurrentLinkedQueue<>();
         boolean errorFree = true;
 
         private ObservableFactory(final Path path) throws IOException {
             final FileSystem fileSystem = path.getFileSystem();
             watcher = fileSystem.newWatchService();
             directory = path;
-            takeWait();
+            takeWatcher();
         }
 
-        public void takeWait() {
+        private void takeWatcher() {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
-                System.out.println("nowy watek");
-
                 while (errorFree) {
-                    System.out.println("subscriberList size " + subscriberList.size());
                     final WatchKey key;
                     try {
                         key = watcher.take();
@@ -71,7 +65,7 @@ public final class PathRx {
                     }
                 }
                 if (errorFree) {
-                    subscriberList.forEach(p -> p.onCompleted());
+                    subscriberList.forEach(Observer::onCompleted);
                 }
             });
         }
@@ -79,11 +73,7 @@ public final class PathRx {
         private Observable<WatchEvent<?>> create() {
             return Observable.create(subscriber -> {
                 subscriberList.add(subscriber);
-                System.out.println(subscriber.toString());
-                //lokalna lista
-                //drugi watek blokujace zdarzenie - jak cos sie zjawi wysle do wszystkich na liscie
-                //na koncu czyszczecnie zasobow wlasnych dla watku
-                //wyjątek IterruptedException
+                //na koncu czyszczecnie zasobow wlasnych dla watku //wyjątek IterruptedException
                 try {
                     registerAll(directory);
                 } catch (IOException exception) {
@@ -97,7 +87,7 @@ public final class PathRx {
         private void registerAll(final Path rootDirectory) throws IOException {
             NodeIterable<Path> root = new NodeIterable<>(new NodePath(rootDirectory));
             NodeIterableRx<Path> temp = new NodeIterableRx<>();
-            Observable<Path> result = temp.convert(root);
+            Observable<Path> result = Observable.from(root); //temp.convert(root);
             result.filter(element -> Files.isDirectory(element)).forEach((dir) -> {
                 try {
                     register(dir);
