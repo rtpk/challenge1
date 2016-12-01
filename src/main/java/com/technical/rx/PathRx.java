@@ -42,6 +42,7 @@ public final class PathRx {
         private void takeWatcher() {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
+
                 while (errorFree) {
                     final WatchKey key;
                     try {
@@ -68,26 +69,25 @@ public final class PathRx {
                     subscriberList.forEach(Observer::onCompleted);
                 }
             });
+            executor.shutdown();
         }
 
         private Observable<WatchEvent<?>> create() {
             return Observable.create(subscriber -> {
                 subscriberList.add(subscriber);
-                //na koncu czyszczecnie zasobow wlasnych dla watku //wyjątek IterruptedException
                 try {
                     registerAll(directory);
                 } catch (IOException exception) {
                     subscriberList.forEach(s -> s.onError(exception));
                     errorFree = false;
                 }
-
             });
         }
 
         private void registerAll(final Path rootDirectory) throws IOException {
             NodeIterable<Path> root = new NodeIterable<>(new NodePath(rootDirectory));
             NodeIterableRx<Path> temp = new NodeIterableRx<>();
-            Observable<Path> result = Observable.from(root); //temp.convert(root);
+            Observable<Path> result = temp.convert(root);
             result.filter(element -> Files.isDirectory(element)).forEach((dir) -> {
                 try {
                     register(dir);

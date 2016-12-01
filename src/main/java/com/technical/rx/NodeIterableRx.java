@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 
 @Slf4j
-public class NodeIterableRx<T> {
+public class NodeIterableRx<Path> {
 
-    public Observable<T> convert(Iterable<T> source) {
+    public Observable<Path> convert(Iterable<Path> source) {
         return Observable.from(source);
     }
 
