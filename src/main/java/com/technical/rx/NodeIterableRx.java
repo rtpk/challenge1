@@ -1,13 +1,17 @@
 package com.technical.rx;
 
+import com.technical.node.NodeIterable;
 import lombok.extern.slf4j.Slf4j;
 import rx.Observable;
 
-@Slf4j
-public class NodeIterableRx<Path> {
+import java.nio.file.Path;
 
-    public Observable<Path> convert(Iterable<Path> source) {
-        return Observable.from(source);
+@Slf4j
+public class NodeIterableRx {
+
+    public Observable<Path> convert(NodeIterable<Path> source) {
+        Observable<Path> result = Observable.from(source);
+        return result;
     }
 
 }

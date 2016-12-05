@@ -30,7 +30,7 @@ class WebsocketsStompServices {
     public void start(String pathName) throws Exception {
         File file = new File("C:\\Users\\rtpk\\Downloads\\New folder");
         NodeIterable<File> root = new NodeIterable<>(new NodeFile(file));
-        NodeIterableRx<File> temp = new NodeIterableRx<>();
+        NodeIterableRx temp = new NodeIterableRx();
 //        BlockingObservable<File> result = temp.convert(root);
 //        result.subscribe(
 //                element -> {
