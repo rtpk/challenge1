@@ -74,18 +74,9 @@ public final class PathRx {
 
         private Observable<WatchEvent<?>> create() {
             return Observable.create(p ->
-                addSubscriber.get());
-            }
-
-        @Override
-        public void close() throws Exception {
-            addSubscriber.getAndSet((it) -> {});
-            task.cancel(false);
-            watcher.close();
-            directoriesByKey.clear();
-            subscriberQueue.clear();
-
+                    addSubscriber.get().accept(p));
         }
+
 
         private void startAddAllToWatcher() throws InterruptedException {
             try {
@@ -126,6 +117,14 @@ public final class PathRx {
             }
         }
 
+        @Override
+        public void close() throws Exception {
+            addSubscriber.getAndSet((it) -> { });
+            task.cancel(false);
+            watcher.close();
+            directoriesByKey.clear();
+            subscriberQueue.clear();
+        }
 
 
     }
