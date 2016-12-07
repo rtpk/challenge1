@@ -3,7 +3,6 @@ package com.technical.websockets.services;
 
 import com.technical.file.NodeFile;
 import com.technical.node.NodeIterable;
-import com.technical.rx.NodeIterableRx;
 import com.technical.services.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ class WebsocketsStompServices {
     public void start(String pathName) throws Exception {
         File file = new File("C:\\Users\\rtpk\\Downloads\\New folder");
         NodeIterable<File> root = new NodeIterable<>(new NodeFile(file));
-        NodeIterableRx temp = new NodeIterableRx();
 //        BlockingObservable<File> result = temp.convert(root);
 //        result.subscribe(
 //                element -> {

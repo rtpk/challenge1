@@ -11,6 +11,8 @@ import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -18,7 +20,9 @@ import static java.nio.file.StandardWatchEventKinds.*;
 public final class PathRx {
 
     public static Observable<WatchEvent<?>> watch(final Path path) throws IOException, InterruptedException {
-        return new ObservableFactory(path).create();
+        if (Files.isDirectory(path))
+            return new ObservableFactory(path).create();
+        else throw new IllegalArgumentException();
     }
 
     private static class ObservableFactory implements AutoCloseable {
@@ -26,70 +30,75 @@ public final class PathRx {
         private final WatchService watcher;
         private final Path directory;
         private final ConcurrentMap<WatchKey, Path> directoriesByKey = new ConcurrentHashMap<>();
-        private final Queue<Subscriber> subscriberList = new ConcurrentLinkedQueue<>();
+        private final Queue<Subscriber> subscriberQueue = new ConcurrentLinkedQueue<>();
         private final ExecutorService executor = Executors.newSingleThreadExecutor();
         private boolean errorFree = true;
         private Future task;
+        private AtomicReference<Consumer<Subscriber>> addSubscriber = new AtomicReference<>(subscriberQueue::add);
 
         private ObservableFactory(final Path path) throws IOException, InterruptedException {
-            System.out.println("konstruktor");
             final FileSystem fileSystem = path.getFileSystem();
             watcher = fileSystem.newWatchService();
             directory = path;
             startAddAllToWatcher();
-
-          //  task = executor.submit(this::watchFolders);//nie dziala do konca prawidlowo
+            task = executor.submit(this::watchFolders);
         }
 
         private void watchFolders() {
-            System.out.println("POCZATEK WATKU");
             while (errorFree) {
                 final WatchKey key;
                 try {
                     key = watcher.take();
                 } catch (InterruptedException exception) {
-                    subscriberList.forEach(s -> s.onError(exception)); //tutaj nie tak jak powinno..
+                    subscriberQueue.forEach(s -> s.onError(exception));
                     errorFree = false;
                     break;
                 }
                 final Path dir = directoriesByKey.getOrDefault(key, directory);
                 for (final WatchEvent<?> event : key.pollEvents()) {
-                    subscriberList.forEach(s -> s.onNext(event));
+                    subscriberQueue.forEach(s -> s.onNext(event));
                     addNewPathToWatcher(dir, event);
                 }
                 boolean valid = key.reset();
-                if (!valid) { //co bedzie jak valid i brake
+                if (!valid) {
                     directoriesByKey.remove(key);
                     if (directoriesByKey.isEmpty()) {
                         break;
                     }
                 }
-            }  //poprawic kontrakt o usuwaniu plikow i ich co dzieje sie z ich rejestracja wtedy -> dodac do kontraktu -> test
-            if (errorFree) {
-                subscriberList.forEach(Observer::onCompleted);
             }
-            System.out.println("KONIEC WATKU");
+            if (errorFree) {
+                subscriberQueue.forEach(Observer::onCompleted);
+            }
         }
 
         private Observable<WatchEvent<?>> create() {
-            return Observable.create(subscriber -> {
-                subscriberList.add(subscriber);
-            });
+            return Observable.create(p ->
+                addSubscriber.get());
+            }
+
+        @Override
+        public void close() throws Exception {
+            addSubscriber.getAndSet((it) -> {});
+            task.cancel(false);
+            watcher.close();
+            directoriesByKey.clear();
+            subscriberQueue.clear();
+
         }
 
         private void startAddAllToWatcher() throws InterruptedException {
             try {
                 addAllPathsByIteratorToWatcher(directory);
             } catch (IOException exception) {
-                subscriberList.forEach(s -> s.onError(exception));
+                subscriberQueue.forEach(s -> s.onError(exception));
                 errorFree = false;
             }
         }
 
         private void addAllPathsByIteratorToWatcher(final Path rootDirectory) throws IOException, InterruptedException {
             NodeIterable<Path> root = new NodeIterable<>(new NodePath(rootDirectory));
-            NodeIterableRx temp = new NodeIterableRx();
-            Observable<Path> result = temp.convert(root);
+            Observable<Path> result = Observable.from(root);
             result.filter(element -> Files.isDirectory(element)).forEach((dir) -> {
                 try {
                     addPathToWatcher(dir);
@@ -100,7 +109,6 @@ public final class PathRx {
         }
 
         private void addPathToWatcher(final Path dir) throws IOException {
-            System.out.println("dziala");
             final WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
             directoriesByKey.putIfAbsent(key, dir);
         }
@@ -108,12 +116,9 @@ public final class PathRx {
         private void addNewPathToWatcher(final Path dir, final WatchEvent<?> event) {
             final Kind<?> kind = event.kind();
             if (kind.equals(ENTRY_CREATE)) {
-                final WatchEvent<Path> eventWithPath = cast(event);
-                final Path name = eventWithPath.context();
-                final Path child = dir.resolve(name);
                 try {
-                    if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
-                        addPathToWatcher(child);
+                    if (Files.isDirectory(dir, NOFOLLOW_LINKS)) {
+                        addPathToWatcher(dir);
                     }
                 } catch (final IOException exception) {
                     exception.printStackTrace();
@@ -121,14 +126,7 @@ public final class PathRx {
             }
         }
 
-        @SuppressWarnings("unchecked")
-        static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-            return (WatchEvent<T>) event;
-        }
 
-        @Override
-        public void close() throws Exception {
-            task.cancel(true);
-        }
+
     }
 }

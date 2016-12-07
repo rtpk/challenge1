@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class NodeIterable<T> implements Iterable {
+public class NodeIterable<T> implements Iterable<T> {
     private Node<T> node;
 
     public NodeIterable(Node<T> node) {
