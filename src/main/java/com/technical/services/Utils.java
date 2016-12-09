@@ -1,25 +1,27 @@
 package com.technical.services;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-@Slf4j
 @Service
 public class Utils {
 
-    public boolean createFileByPath(String name) {
-        File newFile = new File(name);
-        try {
-            newFile.createNewFile();
-        } catch (IOException e) {
-            log.error("Error while creating new file {}",e.getCause().toString());
-             return false;
-        }
-        return true;
+    @Autowired
+    FileSystem fileSystem;
 
+    public Path createByPath(String name) {
+        System.out.println("przyszlo: " +name);
+        try {
+         return    Files.createDirectories(fileSystem.getPath(name));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

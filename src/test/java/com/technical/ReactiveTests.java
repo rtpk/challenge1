@@ -21,7 +21,7 @@ public class ReactiveTests {
         //Given
         FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
         Files.createDirectories(rootFile.getPath("/root/folder1"));
-        final Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+        Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
 
         ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
         observable.subscribe(replaySubject);
@@ -34,4 +34,17 @@ public class ReactiveTests {
         assertThat(event.context()).isEqualTo(rootFile.getPath("/root/folder1/file2.txt").getFileName());
     }
 
+    @Test
+    public void shouldThrowExceptionPathIsNotFile() throws IOException, InterruptedException {
+        //Given
+        FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
+        try {
+            //When
+            Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+        } catch (IllegalArgumentException e) {
+            //Then
+            assertThat(e).hasStackTraceContaining("java.lang.IllegalArgumentException");
+        }
+    }
 }
+

@@ -24,8 +24,9 @@ class Controller {
     @RequestMapping(value = "/addFile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getActiveOrders(@RequestParam String name) {
 
-        if (utils.createFileByPath(name))
+        if (utils.createByPath(name) != null)
             return new ResponseEntity<>(HttpStatus.OK);
+
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

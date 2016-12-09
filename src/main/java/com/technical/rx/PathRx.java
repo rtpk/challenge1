@@ -30,7 +30,7 @@ public final class PathRx {
         private final WatchService watcher;
         private final Path directory;
         private final ConcurrentMap<WatchKey, Path> directoriesByKey = new ConcurrentHashMap<>();
-        private final Queue<Subscriber> subscriberQueue = new ConcurrentLinkedQueue<>();
+        private final Queue<Subscriber<? super WatchEvent<?>>> subscriberQueue = new ConcurrentLinkedQueue<>();
         private final ExecutorService executor = Executors.newSingleThreadExecutor();
         private boolean errorFree = true;
         private Future task;
@@ -57,7 +57,11 @@ public final class PathRx {
                 final Path dir = directoriesByKey.getOrDefault(key, directory);
                 for (final WatchEvent<?> event : key.pollEvents()) {
                     subscriberQueue.forEach(s -> s.onNext(event));
-                    addNewPathToWatcher(dir, event);
+                    try {
+                        addNewPathToWatcher(dir, event);
+                    } catch (IOException e) {
+                        subscriberQueue.forEach(s -> s.onError(e));
+                    }
                 }
                 boolean valid = key.reset();
                 if (!valid) {
@@ -72,7 +76,7 @@ public final class PathRx {
             }
         }
 
-        private Observable<WatchEvent<?>> create() {
+        public Observable<WatchEvent<?>> create() {
             return Observable.create(p ->
                     addSubscriber.get().accept(p));
         }
@@ -104,22 +108,24 @@ public final class PathRx {
             directoriesByKey.putIfAbsent(key, dir);
         }
 
-        private void addNewPathToWatcher(final Path dir, final WatchEvent<?> event) {
+        private void addNewPathToWatcher(final Path dir, final WatchEvent<?> event) throws IOException {
             final Kind<?> kind = event.kind();
             if (kind.equals(ENTRY_CREATE)) {
-                try {
-                    if (Files.isDirectory(dir, NOFOLLOW_LINKS)) {
-                        addPathToWatcher(dir);
-                    }
-                } catch (final IOException exception) {
-                    exception.printStackTrace();
+                final WatchEvent<Path> eventWithPath = (WatchEvent<Path>) event;
+                final Path name = eventWithPath.context();
+                final Path child = dir.resolve(name);
+
+                if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
+                    addPathToWatcher(child);
                 }
+
             }
         }
 
         @Override
         public void close() throws Exception {
-            addSubscriber.getAndSet((it) -> { });
+            addSubscriber.getAndSet((it) -> {
+            });
             task.cancel(false);
             watcher.close();
             directoriesByKey.clear();
