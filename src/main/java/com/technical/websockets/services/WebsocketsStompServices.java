@@ -22,37 +22,40 @@ class WebsocketsStompServices {
 
     private final SimpMessagingTemplate template;
     private FileSystem fileSystem;
+    private PathRx pathRx;
     private Observable<WatchEvent<?>> observable;
 
     @Autowired
-    public WebsocketsStompServices(SimpMessagingTemplate template, FileSystem fileSystem) {
+    public WebsocketsStompServices(SimpMessagingTemplate template, FileSystem fileSystem, PathRx pathRx) {
         this.template = template;
         this.fileSystem = fileSystem;
+        this.pathRx = pathRx;
     }
 
     @PostConstruct
-    public void init()  throws Exception {
+    public void init() throws Exception {
         System.out.println("START");
-        Files.createDirectories(fileSystem.getPath("/root"));
-        observable = PathRx.watch(fileSystem.getPath("/root"));
-        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();  //jakas tablica
-        observable.subscribe(replaySubject);
-        replaySubject.subscribe(
-                element -> {sendFilesListing(element.toString());
-                    System.out.println("wyslano");});
+        observable = pathRx.watch();
     }
 
     @MessageMapping("/start")
     public void start(String pathName) throws InterruptedException, IOException {
+        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();  //jakas tablica
+        observable.subscribe(replaySubject);
+        replaySubject.subscribe(
+                element -> {
+                    sendFilesListing(element.toString());
+                    System.out.println("wyslano");
+                });
 
-
-        Files.createDirectories(fileSystem.getPath("/root/test"));
+        sendFilesListing("START");
     }
 
 
     @MessageMapping("/files")
     public void addFile(String pathName) throws Exception {
-        System.out.println("przyszlo: " +pathName);
+
+        System.out.println("przyszlo: " + pathName);
         Files.createDirectories(fileSystem.getPath(pathName));
     }
 

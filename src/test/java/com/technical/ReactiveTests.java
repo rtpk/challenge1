@@ -21,7 +21,8 @@ public class ReactiveTests {
         //Given
         FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
         Files.createDirectories(rootFile.getPath("/root/folder1"));
-        Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+        PathRx pathRx = new PathRx(rootFile.getPath("/root"));
+        Observable<WatchEvent<?>> observable = pathRx.watch();
 
         ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
         observable.subscribe(replaySubject);
@@ -40,7 +41,8 @@ public class ReactiveTests {
         FileSystem rootFile = Jimfs.newFileSystem(Configuration.unix());
         try {
             //When
-            Observable<WatchEvent<?>> observable = PathRx.watch(rootFile.getPath("/root"));
+            PathRx pathRx = new PathRx(rootFile.getPath("/root"));
+            Observable<WatchEvent<?>> observable = pathRx.watch();
         } catch (IllegalArgumentException e) {
             //Then
             assertThat(e).hasStackTraceContaining("java.lang.IllegalArgumentException");
