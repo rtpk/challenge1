@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
 @Slf4j
@@ -34,27 +35,27 @@ class WebsocketsStompServices {
 
     @PostConstruct
     public void init() throws Exception {
-        System.out.println("START");
         observable = pathRx.watch();
     }
 
     @MessageMapping("/start")
     public void start(String pathName) throws InterruptedException, IOException {
-        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();  //jakas tablica
+        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
         observable.subscribe(replaySubject);
+        Files.createDirectories(fileSystem.getPath("/root/test2"));
+        Files.createDirectories(fileSystem.getPath("/root/test4/test6"));
         replaySubject.subscribe(
                 element -> {
-                    sendFilesListing(element.toString());
+                    Path dir = (Path) pathRx.getKeyWatchable();
+                    Path fullPath = dir.resolve((Path) element.context());
+                    sendFilesListing(fullPath.toString());
                     System.out.println("wyslano");
                 });
-
-        sendFilesListing("START");
     }
 
 
     @MessageMapping("/files")
     public void addFile(String pathName) throws Exception {
-
         System.out.println("przyszlo: " + pathName);
         Files.createDirectories(fileSystem.getPath(pathName));
     }

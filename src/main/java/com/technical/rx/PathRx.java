@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 @Service
 public class PathRx implements AutoCloseable {
@@ -27,6 +27,12 @@ public class PathRx implements AutoCloseable {
     private boolean errorFree = true;
     private Future task;
     private AtomicReference<Consumer<Subscriber>> addSubscriber = new AtomicReference<>(subscriberQueue::add);
+    private WatchKey key;
+
+
+    public Watchable getKeyWatchable() {
+        return key.watchable();
+    }
 
     public PathRx(final Path path) throws IOException, InterruptedException {
         final FileSystem fileSystem = path.getFileSystem();
@@ -45,7 +51,6 @@ public class PathRx implements AutoCloseable {
 
     private void watchFolders() {
         while (errorFree) {
-            final WatchKey key;
             try {
                 key = watcher.take();
             } catch (InterruptedException exception) {
@@ -54,14 +59,14 @@ public class PathRx implements AutoCloseable {
                 break;
             }
             final Path dir = directoriesByKey.getOrDefault(key, directory);
-            for (final WatchEvent<?> event : key.pollEvents()) {
+            key.pollEvents().stream().filter(event -> event.kind() == ENTRY_CREATE).forEach(event -> {
                 subscriberQueue.forEach(s -> s.onNext(event));
                 try {
                     addNewPathToWatcher(dir, event);
                 } catch (IOException e) {
                     subscriberQueue.forEach(s -> s.onError(e));
                 }
-            }
+            });
             boolean valid = key.reset();
             if (!valid) {
                 directoriesByKey.remove(key);
@@ -75,11 +80,10 @@ public class PathRx implements AutoCloseable {
         }
     }
 
-    public Observable<WatchEvent<?>> create() {
+    private Observable<WatchEvent<?>> create() {
         return Observable.create(p ->
                 addSubscriber.get().accept(p));
     }
-
 
     private void startAddAllToWatcher() throws InterruptedException {
         try {
@@ -105,7 +109,7 @@ public class PathRx implements AutoCloseable {
     }
 
     private void addPathToWatcher(final Path dir) throws IOException {
-        final WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        final WatchKey key = dir.register(watcher, ENTRY_CREATE); //, ENTRY_DELETE, ENTRY_MODIFY);
         //tutaj modifikacja zeby rejestrowalo potomkow
         directoriesByKey.putIfAbsent(key, dir);
     }
@@ -132,6 +136,5 @@ public class PathRx implements AutoCloseable {
         directoriesByKey.clear();
         subscriberQueue.clear();
     }
-
 
 }

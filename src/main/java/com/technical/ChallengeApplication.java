@@ -21,7 +21,7 @@ class ChallengeApplication {
 
     @Bean
     public Path path() throws IOException {
-      Files.createDirectories(fileSystem().getPath("/root/test"));
+      Files.createDirectories(fileSystem().getPath("/root"));
       return  fileSystem().getPath("/root");
     }
 
