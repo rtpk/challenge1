@@ -4,7 +4,6 @@ import com.technical.rx.PathRx;
 import com.technical.services.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,25 +38,22 @@ class Controller {
     }
 
 
-    @RequestMapping(value = "/start", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ResponseEntity register() throws IOException, InterruptedException {
         observable = pathRx.watch();
         ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
         observable.subscribe(replaySubject);
-        Files.createDirectories(fileSystem.getPath("/root/test2"));
-        Files.createDirectories(fileSystem.getPath("/root/test4/test6"));
         replaySubject.subscribe(
                 element -> {
                     Path dir = (Path) pathRx.getKeyWatchable();
                     Path fullPath = dir.resolve((Path) element.context());
                     this.template.convertAndSend("/filesList", fullPath.toString());
-                    System.out.println("wyslano");
                 });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    @RequestMapping(value = "/addFile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     public ResponseEntity getActiveOrders(@RequestParam String name) {
 
         if (utils.createByPath(name) != null)

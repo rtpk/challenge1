@@ -42,8 +42,6 @@ class WebsocketsStompServices {
     public void start(String pathName) throws InterruptedException, IOException {
         ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
         observable.subscribe(replaySubject);
-        Files.createDirectories(fileSystem.getPath("/root/test2"));
-        Files.createDirectories(fileSystem.getPath("/root/test4/test6"));
         replaySubject.subscribe(
                 element -> {
                     Path dir = (Path) pathRx.getKeyWatchable();
@@ -51,6 +49,8 @@ class WebsocketsStompServices {
                     sendFilesListing(fullPath.toString());
                     System.out.println("wyslano");
                 });
+//        Files.createDirectories(fileSystem.getPath("/root/test2")); //test
+//        Files.createDirectories(fileSystem.getPath("/root/test4/test6")); //test
     }
 
 

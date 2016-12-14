@@ -23,16 +23,12 @@ public class PathRx implements AutoCloseable {
     private final WatchService watcher;
     private final Path directory;
     private final ConcurrentMap<WatchKey, Path> directoriesByKey = new ConcurrentHashMap<>();
+
     private final Queue<Subscriber<? super WatchEvent<?>>> subscriberQueue = new ConcurrentLinkedQueue<>();
     private boolean errorFree = true;
     private Future task;
     private AtomicReference<Consumer<Subscriber>> addSubscriber = new AtomicReference<>(subscriberQueue::add);
     private WatchKey key;
-
-
-    public Watchable getKeyWatchable() {
-        return key.watchable();
-    }
 
     public PathRx(final Path path) throws IOException, InterruptedException {
         final FileSystem fileSystem = path.getFileSystem();
@@ -110,7 +106,7 @@ public class PathRx implements AutoCloseable {
 
     private void addPathToWatcher(final Path dir) throws IOException {
         final WatchKey key = dir.register(watcher, ENTRY_CREATE); //, ENTRY_DELETE, ENTRY_MODIFY);
-        //tutaj modifikacja zeby rejestrowalo potomkow
+        //tutaj modifikacja zeby rejestrowalo potomkow?
         directoriesByKey.putIfAbsent(key, dir);
     }
 
@@ -137,4 +133,11 @@ public class PathRx implements AutoCloseable {
         subscriberQueue.clear();
     }
 
+    public Watchable getKeyWatchable() {
+        return key.watchable();
+    }
+
+    public Queue<Subscriber<? super WatchEvent<?>>> getSubscriberQueue() {
+        return subscriberQueue;
+    }
 }
