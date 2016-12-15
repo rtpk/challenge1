@@ -3,21 +3,23 @@ package com.technical;
 import com.technical.rx.PathRx;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.test.context.junit4.SpringRunner;
 import rx.subjects.ReplaySubject;
 
 import java.io.IOException;
 import java.nio.file.WatchEvent;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Created by Robert Piotrowski on 15/12/2016.
- */
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class RestIntegrationTests  {
 
     @Autowired
@@ -31,15 +33,20 @@ public class RestIntegrationTests  {
 
 
     @Test
-    public void shouldSubscribeOneToPathRx() throws InterruptedException {
+    public void shouldReturnGivenDirs() throws InterruptedException {
         //Given
-        assertThat(pathRx.getSubscriberQueue().size()).isEqualTo(0);
+        restTemplate.getForEntity("http://localhost:8080/addFile?name=/root/test",ResponseEntity.class);
+        restTemplate.getForEntity("http://localhost:8080/addFile?name=/root/test2",ResponseEntity.class);
 
         //When
-        HttpStatus httpStatus = restTemplate.getForEntity("http://localhost:8080/start",ResponseEntity.class).getStatusCode();
+        ResponseEntity responseEntity = restTemplate.getForEntity("http://localhost:8080/start",String.class);
+        System.out.println(responseEntity.getBody());
 
+        String result =  responseEntity.getBody().toString();
         //Then
-        assertThat(pathRx.getSubscriberQueue().size()).isEqualTo(1);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result).contains("/root/test","root/test2");
+
     }
 
 

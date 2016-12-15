@@ -31,11 +31,8 @@ public class WebsocketIntegrationTests {
 
     @LocalServerPort
     private int port;
-
     private SockJsClient sockJsClient;
-
     private WebSocketStompClient stompClient;
-
     private final WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
 
     @Before
@@ -43,17 +40,14 @@ public class WebsocketIntegrationTests {
         List<Transport> transports = new ArrayList<>();
         transports.add(new WebSocketTransport(new StandardWebSocketClient()));
         this.sockJsClient = new SockJsClient(transports);
-
         this.stompClient = new WebSocketStompClient(sockJsClient);
         this.stompClient.setMessageConverter(new StringMessageConverter());
     }
 
     @Test
     public void shouldSendFileNameAndReceiveIt() throws Exception {
-
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> failure = new AtomicReference<>();
-
         StompSessionHandler handler = new TestSessionHandler(failure) {
 
             @Override
@@ -88,7 +82,7 @@ public class WebsocketIntegrationTests {
 
         this.stompClient.connect("ws://localhost:{port}/ws", this.headers, handler, this.port);
 
-        if (latch.await(4, TimeUnit.SECONDS)) {
+        if (latch.await(5, TimeUnit.SECONDS)) {
             if (failure.get() != null) {
                 throw new AssertionError("", failure.get());
             }
@@ -122,4 +116,9 @@ public class WebsocketIntegrationTests {
             this.failure.set(ex);
         }
     }
+
+/*
+Based on: https://github.com/spring-guides/gs-messaging-stomp-websocket/blob/master/complete/src/test/java/hello/GreetingIntegrationTests.java
+ */
+
 }
