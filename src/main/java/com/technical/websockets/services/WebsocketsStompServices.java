@@ -8,10 +8,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import rx.Observable;
-import rx.subjects.ReplaySubject;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,21 +34,14 @@ class WebsocketsStompServices {
     @PostConstruct
     public void init() throws Exception {
         observable = pathRx.watch();
-    }
-
-    @MessageMapping("/start")
-    public void start(String pathName) throws InterruptedException, IOException {
-        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
-        observable.subscribe(replaySubject);
-        replaySubject.subscribe(
+        observable.subscribe(
                 element -> {
                     Path dir = (Path) pathRx.getKeyWatchable();
                     Path fullPath = dir.resolve((Path) element.context());
                     sendFilesListing(fullPath.toString());
-                    System.out.println("wyslano");
+                    System.out.println("wyslano z pathrx");
                 });
-//        Files.createDirectories(fileSystem.getPath("/root/test2")); //test
-//        Files.createDirectories(fileSystem.getPath("/root/test4/test6")); //test
+
     }
 
 

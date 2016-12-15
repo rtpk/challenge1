@@ -12,18 +12,33 @@
 
         var stompClient = null;
         function connect() {
-            var socket = new SockJS('http://localhost:8080/ws');
-            stompClient = Stomp.over(socket);            
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-                stompClient.send("/app/start", {}, "start");
-                stompClient.subscribe('/filesList', function(data) {
-                console.log('data: '+data);
-                addToList(data.body);
+                $.ajax({
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                    },
+                    url:"http://localhost:8080/start"
+                }).then(function(body){
+                    console.log(body);
+                    var list = body;
 
-            });
-            });
-            };
+                    $.each(list, function(index, element){
+                        addToList(element)
+                    });
+                    return
+                 }).then(function() {
+
+                     var socket = new SockJS('http://localhost:8080/ws');
+                     stompClient = Stomp.over(socket);
+                     stompClient.connect({}, function(frame) {
+                        stompClient.subscribe('/filesList', function(data) {
+                             console.log('data: '+data);
+                            addToList(data.body); 
+                        });
+                     });
+                });
+        };
+
 
         function sendName() {
             var pathName = document.getElementById('name').value;

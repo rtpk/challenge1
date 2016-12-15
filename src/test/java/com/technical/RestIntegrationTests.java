@@ -3,26 +3,22 @@ package com.technical;
 import com.technical.rx.PathRx;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import rx.subjects.ReplaySubject;
 
 import java.io.IOException;
 import java.nio.file.WatchEvent;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class WebsocketsTests {
+/**
+ * Created by Robert Piotrowski on 15/12/2016.
+ */
+public class RestIntegrationTests  {
 
     @Autowired
     private PathRx pathRx;
@@ -76,4 +72,3 @@ public class WebsocketsTests {
     */
 
 }
-
