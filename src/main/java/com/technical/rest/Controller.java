@@ -24,7 +24,7 @@ import java.util.List;
 
 
 @RestController
-class Controller {
+public class Controller {
 
     private FileSystem fileSystem;
     private PathRx pathRx;

@@ -1,7 +1,6 @@
 package com.technical;
 
 import com.technical.rx.PathRx;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit4.SpringRunner;
-import rx.subjects.ReplaySubject;
-
-import java.io.IOException;
-import java.nio.file.WatchEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,23 +43,6 @@ public class RestIntegrationTests  {
         assertThat(result).contains("/root/test","root/test2");
 
     }
-
-
-    @Test
-    public void shouldPathRxEmitOneElement() throws InterruptedException, IOException {
-        //Given
-        HttpStatus httpStatus = restTemplate.getForEntity("http://localhost:8080/start",ResponseEntity.class).getStatusCode();
-        ReplaySubject<WatchEvent<?>> replaySubject = ReplaySubject.create();
-        pathRx.watch().subscribe(replaySubject);
-
-        //When
-        restTemplate.getForEntity("http://localhost:8080/addFile?name=/root/test",ResponseEntity.class);
-
-        //Then
-        final WatchEvent<?> event = replaySubject.toBlocking().first();
-        Assertions.assertThat(event.context().toString()).isEqualTo("test");
-    }
-
 
     //TODO
     //websockety/rest i caly mechanizm dookola

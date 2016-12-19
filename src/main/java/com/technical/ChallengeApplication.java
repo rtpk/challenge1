@@ -16,7 +16,7 @@ import java.nio.file.Path;
 
 @SpringBootApplication
 @EnableScheduling
-class ChallengeApplication {
+public class ChallengeApplication {
 
     @Bean
     public FileSystem fileSystem() {
