@@ -17,7 +17,7 @@
                     headers:{
                         "Content-Type":"application/json",
                     },
-                    url:"http://localhost:8080/start"
+                    url:"/start"
                 }).then(function(body){
                     console.log(body);
                     var list = body;
@@ -28,7 +28,7 @@
                     return
                  }).then(function() {
 
-                     var socket = new SockJS('http://localhost:8080/ws');
+                     var socket = new SockJS('/ws');
                      stompClient = Stomp.over(socket);
                      stompClient.connect({}, function(frame) {
                         stompClient.subscribe('/filesList', function(data) {
