@@ -39,20 +39,19 @@ class WebsocketsStompServices {
                     Path dir = (Path) pathRx.getKeyWatchable();
                     Path fullPath = dir.resolve((Path) element.context());
                     sendFilesListing(fullPath.toString());
-                    System.out.println("wyslano z pathrx");
+                    log.info("wyslano fullPath ", fullPath.toString());
                 });
-
     }
 
 
     @MessageMapping("/files")
     public void addFile(String pathName) throws Exception {
-        System.out.println("przyszlo: " + pathName);
         Files.createDirectories(fileSystem.getPath(pathName));
     }
 
     public void sendFilesListing(String content) {
         this.template.convertAndSend("/filesList", content);
+        log.info("fileList ", content);
     }
 
 }

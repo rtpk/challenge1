@@ -14,10 +14,14 @@ public class Utils {
     @Autowired
     FileSystem fileSystem;
 
+    @Autowired
+    Path path;
+
     public Path createByPath(String name) {
-        System.out.println("przyszlo: " +name);
+
+
         try {
-         return    Files.createDirectories(fileSystem.getPath(name));
+            return Files.createDirectories(fileSystem.getPath(name));
         } catch (IOException e) {
             e.printStackTrace();
         }

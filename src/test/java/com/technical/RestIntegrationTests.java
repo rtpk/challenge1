@@ -44,6 +44,21 @@ public class RestIntegrationTests  {
 
     }
 
+    @Test
+    public void shouldReturnEmpty() {
+        //Given
+        restTemplate.getForEntity("http://localhost:8080/addFile?name=EMPTY/root/test",ResponseEntity.class);
+
+        //When
+        ResponseEntity responseEntity = restTemplate.getForEntity("http://localhost:8080/start",String.class);
+        System.out.println(responseEntity.getBody());
+
+        String result =  responseEntity.getBody().toString();
+        //Then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result).contains("");
+    }
+
     //TODO
     //websockety/rest i caly mechanizm dookola
     //testy integracyjny pokazujace wypychanie przez websockety foldery do klientow i zmiany na nich

@@ -16,7 +16,6 @@ import rx.Observable;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
@@ -43,8 +42,6 @@ public class Controller {
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ResponseEntity register() throws IOException, InterruptedException {
-        Files.createDirectories(fileSystem.getPath("/root/test54/asd"));
-        Files.createDirectories(fileSystem.getPath("/root/test524/22asd"));
         NodeIterable<Path> root = new NodeIterable<>(new NodePath(fileSystem.getPath("/root")));
         List<String> treeFile = new ArrayList<>();
         root.forEach(p -> treeFile.add(p.toAbsolutePath().toString()));
