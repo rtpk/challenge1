@@ -69,10 +69,10 @@ Based on: https://github.com/spring-guides/gs-messaging-stomp-websocket/blob/mas
 
                     @Override
                     public void handleFrame(StompHeaders headers, Object payload) {
-                        String greeting = (String) payload;
+                        String pathName = (String) payload;
                         //Then
                         try {
-                            assertEquals("/root/newTestDir", greeting);
+                            assertEquals("/root/newTestDir", pathName);
                         } catch (Throwable t) {
                             failure.set(t);
                         } finally {
@@ -121,10 +121,10 @@ Based on: https://github.com/spring-guides/gs-messaging-stomp-websocket/blob/mas
 
                     @Override
                     public void handleFrame(StompHeaders headers, Object payload) {
-                        String greeting = (String) payload;
+                        String pathName = (String) payload;
                         //Then
                         try {
-                            assertEquals("/root/newTestDir", greeting);
+                            assertEquals("/root/newTestDir", pathName);
                         } catch (Throwable t) {
                             failure.set(t);
                         } finally {
@@ -155,10 +155,10 @@ Based on: https://github.com/spring-guides/gs-messaging-stomp-websocket/blob/mas
 
                     @Override
                     public void handleFrame(StompHeaders headers, Object payload) {
-                        String greeting = (String) payload;
+                        String pathName = (String) payload;
                         //Then
                         try {
-                            assertEquals("/root/newTestDir", greeting);
+                            assertEquals("/root/newTestDir", pathName);
                         } catch (Throwable t) {
                             failure.set(t);
                         } finally {
